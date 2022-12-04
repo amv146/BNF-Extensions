@@ -1,0 +1,143 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda Calculus",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#null"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#booleans"
+        },
+        {
+            "include": "#lambda"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#functions"
+        },
+        {
+            "include": "#separator"
+        },
+        {
+            "include": "#semicolon"
+        },
+        {
+            "include": "#number"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#punctuation"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block.lambda"
+                },
+                {
+                    "begin": "--",
+                    "end": "$",
+                    "name": "comment.line.lambda"
+                }
+            ]
+        },
+        "null": {
+            "patterns": [
+                {
+                    "match": "\"NULL\"",
+                    "name": "constant.language.lambda"
+                }
+            ]
+        },
+        "functions": {
+            "patterns": [
+                {
+                    "match": "(head|tail|less_equal)",
+                    "name": "entity.name.function.lambda"
+                }
+            ]
+        },
+        "booleans": {
+            "patterns": [
+                {
+                    "match": "(true|false)",
+                    "name": "constant.language.lambda"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "match": "\"(\\\\.|[^\"\\\\])*\"",
+                    "name": "string.quoted.double.lambda"
+                }
+            ]
+        },
+        "lambda": {
+            "patterns": [
+                {
+                    "match": "\\\\",
+                    "name": "entity.name.function"
+                }
+            ]
+        },
+        "separator": {
+            "patterns": [
+                {
+                    "match": ";;",
+                    "name": "support.variable.lambda"
+                }
+            ]
+        },
+        "semicolon": {
+            "patterns": [
+                {
+                    "match": ";",
+                    "name": "punctuation.terminator.statement"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "match": "(new|of|val|if|case|let|in|rec)",
+                    "name": "keyword.control.lambda"
+                },
+                {
+                    "match": "(while|do)",
+                    "name": "keyword.control.loop.lambda"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "(:|_|->|:=|\\+|-|\\*|\\/|<|>|<=|>=|=|!=|\\||&&|!)",
+                    "name": "keyword.operator.lambda"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "\\b[0-9]+\\b",
+                    "name": "constant.numeric.lambda"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.lc"
+}
