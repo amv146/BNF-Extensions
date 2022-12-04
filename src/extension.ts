@@ -8,15 +8,15 @@ import * as BNFParser from "./Files/BNFParser/BNFParser";
 import * as ConsoleUtils from "./ConsoleUtils";
 import * as FileSystemEntryUtils from "./Files/FileSystemEntryUtils";
 import * as InputUtils from "./InputUtils";
+import * as PackageUtils from "./Files/Package/PackageUtils";
+import * as RegExpUtils from "./RegExpUtils";
+import * as Strings from "./Strings";
 import * as TerminalUtils from "./TerminalUtils";
 import * as TextmateUtils from "./Textmate/TextmateUtils";
 import * as VSCodeUtils from "./VSCodeUtils";
 import { Project } from "./Files/Project";
 import { Token } from "./Tokens/Token";
-import * as Strings from "./Strings";
-import { splitWords } from "./RegExpUtils";
 import { Config } from "./Files/Config/Config";
-import { configFileName } from "./Strings";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -77,9 +77,9 @@ export async function buildGrammar(): Promise<void> {
     //     project.getLanguageName()
     // );
 
-    const grammarName: string = jsonObject.contributes;
+    // const grammarName: string = jsonObject.contributes;
 
-    ConsoleUtils.log("Grammar name: " + grammarName);
+    // ConsoleUtils.log("Grammar name: " + grammarName);
 }
 
 export async function buildGrammarCommands(project: Project): Promise<void> {
@@ -95,7 +95,7 @@ export async function buildGrammarCommands(project: Project): Promise<void> {
 }
 
 export async function createConfigFile(): Promise<void> {
-    let selectedEntryPath: string =
+    const selectedEntryPath: string =
         await VSCodeUtils.getSelectedExplorerFileSystemEntry();
 
     const grammarFiles: string[] = Project.findGrammarFiles(selectedEntryPath);
@@ -128,13 +128,16 @@ export async function createConfigFile(): Promise<void> {
         grammar: [{}],
     };
 
-    const configFilePath: string = path.join(selectedEntryPath, configFileName);
+    const configFilePath: string = path.join(
+        selectedEntryPath,
+        Strings.configFileName
+    );
+
+    vscode.workspace.onWillSaveTextDocument;
 
     FileSystemEntryUtils.writeJsonFile(configFilePath, config);
 
-    window.showInformationMessage(
-        "" + mainGrammarPath + " " + languageName + " " + languageFileExtension
-    );
+    PackageUtils.addContributesFromConfig(config);
 }
 
 // This method is called when your extension is deactivated
