@@ -65,7 +65,7 @@
         "functions": {
             "patterns": [
                 {
-                    "match": "(head|tail|less_equal)",
+                    "match": "\\b(head|tail|less_equal)\\b",
                     "name": "entity.name.function.lambda"
                 }
             ]
@@ -73,7 +73,7 @@
         "booleans": {
             "patterns": [
                 {
-                    "match": "(true|false)",
+                    "match": "\\b(true|false)\\b",
                     "name": "constant.language.lambda"
                 }
             ]
@@ -113,11 +113,11 @@
         "keywords": {
             "patterns": [
                 {
-                    "match": "(new|of|val|if|case|let|in|rec)",
+                    "match": "\\b(new|of|val|if|case|let|in|rec)\\b",
                     "name": "keyword.control.lambda"
                 },
                 {
-                    "match": "(while|do)",
+                    "match": "\\b(while|do)\\b",
                     "name": "keyword.control.loop.lambda"
                 }
             ]
