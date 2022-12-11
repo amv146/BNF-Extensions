@@ -1,26 +1,28 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "User",
+    "title": "BNFC Project Config Schema",
     "type": "object",
     "properties": {
         "mainGrammarPath": {
-            "description": "",
+            "description": "The relative path to the main grammar file. This file will be used to generate default syntax highlighting rules.",
+            "format": "uri",
             "type": "string"
         },
         "languageName": {
-            "description": "",
+            "description": "The name of the language. This will be used to display the language in the language selection menu.",
             "type": "string"
         },
         "fileExtensions": {
-            "description": "",
+            "description": "The file extensions that will be associated with this language.",
             "type": "array",
             "items": {
                 "pattern": "^\\.[a-zA-Z0-9]+$",
+                "description": "File extension must start with a dot and contain only alphanumeric characters.",
                 "type": "string"
             }
         },
         "grammar": {
-            "description": "",
+            "description": "The syntax highlighting rules for the language. These rules will be used to generate the syntax highlighting rules for the language.",
             "type": "array",
             "items": {
                 "type": "object",
@@ -38,6 +40,7 @@
                     "values": {
                         "type": "array",
                         "items": {
+                            "pattern": "^[a-zA-Z0-9_]+$",
                             "type": "string"
                         }
                     }
@@ -50,9 +53,9 @@
         }
     },
     "required": [
-        "mainGrammarPath",
-        "languageName",
         "fileExtensions",
-        "grammar"
+        "grammar",
+        "mainGrammarPath",
+        "languageName"
     ]
 }

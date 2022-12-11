@@ -4,6 +4,7 @@ export interface ConfigGrammar {
 }
 
 export interface Config {
+    $schema: string;
     languageName: string;
     fileExtensions: string[];
     mainGrammarPath: string;

@@ -5,3 +5,5 @@ export const scopeNamePrefix: string = "source.";
 export const textmateGrammarFileExtension: string = ".tmLanguage.json";
 export const textmateLanguageSchema: string =
     "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json";
+export const configSchema: string =
+    "https://raw.githubusercontent.com/amv146/BNFC-Extensions/master/src/configSchema.json";

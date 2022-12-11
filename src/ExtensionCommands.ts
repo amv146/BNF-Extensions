@@ -55,6 +55,7 @@ export async function createConfigFile(): Promise<void> {
     }
 
     const config: Config = {
+        $schema: Strings.configSchema,
         mainGrammarPath: path.relative(selectedEntryPath, mainGrammarPath),
         languageName: languageName,
         fileExtensions: [languageFileExtension],
