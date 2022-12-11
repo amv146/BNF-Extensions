@@ -4,6 +4,6 @@ export interface TextmatePattern {
         [key: string]: string;
     };
     end?: string;
-    match: string;
+    match?: string;
     name: string;
 }

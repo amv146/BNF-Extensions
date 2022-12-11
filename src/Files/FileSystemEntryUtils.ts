@@ -2,19 +2,22 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 
-import { Uri } from "vscode";
 import * as ConsoleUtils from "../ConsoleUtils";
 
 export async function readFile(filePath: string): Promise<string> {
     return fs.promises.readFile(filePath, "utf8");
 }
 
-export async function readJsonFile<T>(filePath: string): Promise<T> {
-    const fileContent = await readFile(filePath);
+export async function readJsonFile<T>(
+    filePath: string
+): Promise<T | undefined> {
+    const fileContent: string = await readFile(filePath);
 
-    ConsoleUtils.log("File content: " + fileContent);
-
-    return JSON.parse(fileContent);
+    try {
+        return JSON.parse(fileContent);
+    } catch (error) {
+        return undefined;
+    }
 }
 
 export async function readFileLines(filePath: string): Promise<string[]> {
@@ -47,10 +50,10 @@ export function getPathArray(path: string): string[] {
     return path.split("/");
 }
 
-export function findTopMostFileSystemEntryWithName(
+export async function findTopMostFileSystemEntryWithName(
     startPath: string,
     fileSystemEntryName: string
-): string | undefined {
+): Promise<string | undefined> {
     if (!fs.existsSync(startPath)) {
         return undefined;
     }
@@ -69,7 +72,7 @@ export function findTopMostFileSystemEntryWithName(
 
         if (fs.statSync(traversedFileSystemEntryPath).isDirectory()) {
             const result: string | undefined =
-                findTopMostFileSystemEntryWithName(
+                await findTopMostFileSystemEntryWithName(
                     traversedFileSystemEntryPath,
                     fileSystemEntryName
                 );
@@ -81,11 +84,11 @@ export function findTopMostFileSystemEntryWithName(
     }
 }
 
-export function findClosestFilesWithExtension(
+export async function findClosestFilesWithExtension(
     startPath: string,
     fileExtension: string,
     maxNumberOfMatches: number = 0
-): string[] {
+): Promise<string[]> {
     let matches: string[] = [];
 
     if (!fs.existsSync(startPath)) {
@@ -122,7 +125,7 @@ export function findClosestFilesWithExtension(
         const directoryPath = path.join(startPath, directory);
 
         matches = matches.concat(
-            findClosestFilesWithExtension(
+            await findClosestFilesWithExtension(
                 directoryPath,
                 fileExtension,
                 maxNumberOfMatches

@@ -1,6 +1,7 @@
 export enum TextmateScope {
+    constant = "constant.language",
     comment = "comment.line.character",
-    function = "support.function",
+    function = "entity.name.function",
     parameter = "variable.parameter",
     keyword = "keyword.control",
     operator = "keyword.operator",

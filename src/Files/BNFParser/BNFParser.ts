@@ -7,53 +7,31 @@ import { ExecArray } from "xregexp";
 import * as XRegExp from "xregexp";
 import { tokenTypeToTextmateScope } from "../../Tokens/TokenUtils";
 import { TextmateScope } from "../../Textmate/TextmateScope";
+import { log } from "../../ConsoleUtils";
 
 export async function parseBNFFile(grammarPath: string): Promise<Token[]> {
     const lines: string[] = await FileSystemEntryUtils.readFileLines(
         grammarPath
     );
     const tokens: Token[] = [];
-
-    for (const line of lines) {
-        tokens.push(...parseLine(line));
-    }
+    const values: string[] = lines.map((line) => parseLine(line)).flat();
 
     return tokens;
 }
 
-function parseLine(line: string): Token[] {
-    const bnfStartPatternMatch: ExecArray | null = XRegExp.exec(
-        line,
-        RegExps.bnfStartPattern
+function parseLine(line: string): string[] {
+    const matches: ExecArray[] = RegExpUtils.findAllMatches(
+        RegExps.bnfValuePattern,
+        line
     );
 
-    const startIndex: number = bnfStartPatternMatch
-        ? bnfStartPatternMatch.index + bnfStartPatternMatch?.[0].length
-        : -1;
+    for (const match of matches) {
+        const value: string | undefined = match.groups?.value;
 
-    if (startIndex === -1) {
-        return [];
+        if (value === undefined) {
+            continue;
+        }
     }
 
-    const tokens: Token[] = [];
-
-    const tokenMatches: ExecArray[] = RegExpUtils.findAllMatches(
-        RegExps.bnfTokenPattern,
-        line,
-        startIndex
-    );
-
-    for (const tokenMatch of tokenMatches) {
-        const token = {
-            name: tokenMatch.groups?.name ?? "",
-            type: tokenMatch.groups?.type as TokenType,
-            textmateScope: tokenTypeToTextmateScope(
-                tokenMatch.groups?.type as TokenType
-            ),
-        };
-
-        tokens.push(token);
-    }
-
-    return tokens;
+    return matches.map((match) => match.groups?.value ?? "");
 }

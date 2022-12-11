@@ -1,7 +1,8 @@
 import { TextmateScope } from "../Textmate/TextmateScope";
 
-export const enum TokenType {
+export enum TokenType {
     comment = "comment",
+    constant = "constant",
     function = "function",
     keyword = "keyword",
     operator = "operator",

@@ -7,3 +7,4 @@ export const bnfTokenPattern: RegExp = XRegExp(
 );
 export const splitWordsPattern: RegExp =
     /(^[a-z]+|[0-9]+|[A-Z][a-z]+|[A-Z]+(?=[A-Z][a-z]|$|[0-9]))/g;
+export const bnfValuePattern: RegExp = XRegExp('("(?<value>[^"]*)")', "x");

@@ -1,17 +1,18 @@
 import * as Strings from "../Strings";
 import * as TokenUtils from "../Tokens/TokenUtils";
-import { Token, TokenType } from "../Tokens/Token";
 import { TextmatePattern } from "./TextmatePattern";
+import { Token, TokenType } from "../Tokens/Token";
 
 export function generateTextmateJson(
     tokens: Token[],
-    languageName: string
+    languageName: string,
+    languageId: string
 ): string {
     const scopeNameRegex: RegExp = new RegExp(
         `^${escapeRegex(languageName)}\\.(.*)$`
     );
 
-    const scopeName: string = languageName.toLowerCase();
+    const scopeName: string = languageId;
 
     const textmateJson = {
         $schema: Strings.textmateLanguageSchema,
@@ -26,7 +27,7 @@ export function generateTextmateJson(
 
 export function generatePatternIncludes(
     tokens: Token[]
-): { [key: string]: string }[] {
+): Record<string, string>[] {
     let patternIncludes: { [key: string]: string }[] = [];
 
     const tokenTypes = new Set(tokens.map((token) => token.type));
@@ -40,39 +41,78 @@ export function generatePatternIncludes(
     return patternIncludes;
 }
 
-export function generateRepository(tokens: Token[]): {
-    [ruleName: string]: { [patterns: string]: TextmatePattern[] };
-} {
-    const repository: {
-        [ruleName: string]: { [patterns: string]: TextmatePattern[] };
-    } = {};
+export function generateRepository(
+    tokens: Token[]
+): Record<string, Record<string, TextmatePattern[]>> {
+    const repository: Record<string, Record<string, TextmatePattern[]>> = {};
 
     const tokensByType: Map<TokenType, Token[]> = new Map();
 
     tokens.forEach((token) => {
         const tokensOfType = tokensByType.get(token.type) ?? [];
-
         tokensOfType.push(token);
-
         tokensByType.set(token.type, tokensOfType);
     });
 
     for (const [tokenType, tokensOfType] of tokensByType) {
-        const tokensRegex: string = tokensOfType
-            .map((token) => escapeRegex(token.name))
-            .join("|");
-
         repository[tokenType] = {
-            patterns: [
-                {
-                    name: TokenUtils.tokenTypeToTextmateScope(tokenType),
-                    match: "\\b(" + tokensRegex + ")\\b",
-                },
-            ],
+            patterns: [generatePattern(tokensOfType, tokenType)],
         };
     }
 
     return repository;
+}
+
+function generatePattern(
+    tokens: Token[],
+    tokenType: TokenType
+): TextmatePattern {
+    switch (tokenType) {
+        case TokenType.comment:
+            return generateLineCommentPattern(tokens, tokenType);
+        case TokenType.operator:
+            return generateBasicPattern(tokens, tokenType, false);
+        default:
+            return generateBasicPattern(tokens, tokenType);
+    }
+}
+
+function generateNumberPattern(): TextmatePattern {
+    return {
+        match: "\\b[0-9]+\\b",
+        name: "constant.numeric.lambda",
+    };
+}
+
+function generateBasicPattern(
+    tokens: Token[],
+    tokenType: TokenType,
+    wordBoundary: boolean = true
+): TextmatePattern {
+    const tokensRegex: string = tokens
+        .map((token) => escapeRegex(token.name))
+        .join("|");
+
+    return {
+        name: TokenUtils.tokenTypeToTextmateScope(tokenType),
+        match:
+            (wordBoundary && "\\b(") + tokensRegex + (wordBoundary && ")\\b"),
+    };
+}
+
+function generateLineCommentPattern(
+    tokens: Token[],
+    tokenType: TokenType
+): TextmatePattern {
+    const tokensRegex: string = tokens
+        .map((token) => escapeRegex(token.name))
+        .join("|");
+
+    return {
+        begin: escapeRegex(tokensRegex),
+        end: "$",
+        name: TokenUtils.tokenTypeToTextmateScope(tokenType),
+    };
 }
 
 function escapeRegex(string: String): string {
