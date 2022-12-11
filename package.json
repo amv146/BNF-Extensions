@@ -16,9 +16,9 @@
     "contributes": {
         "grammars": [
             {
-                "language": "lc2",
-                "scopeName": "source.lc2",
-                "path": "languages/syntaxes/lc2.tmLanguage.json"
+                "language": "lc",
+                "scopeName": "source.lc",
+                "path": "languages/syntaxes/lc.tmLanguage.json"
             }
         ],
         "commands": [
@@ -42,12 +42,13 @@
         "languages": [
             {
                 "aliases": [
-                    "Lamba Calculus",
-                    "lc2"
+                    "Lambda Calculus",
+                    "lc"
                 ],
-                "id": "lc2",
+                "configuration": "languages/configurations/lc.language-configuration.json",
+                "id": "lc",
                 "extensions": [
-                    ".lc2"
+                    ".lc"
                 ]
             }
         ]
