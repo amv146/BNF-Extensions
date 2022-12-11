@@ -5,7 +5,6 @@
     "properties": {
         "mainGrammarPath": {
             "description": "The relative path to the main grammar file. This file will be used to generate default syntax highlighting rules.",
-            "format": "uri",
             "type": "string"
         },
         "languageName": {

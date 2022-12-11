@@ -1,0 +1,54 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lamba Calculus",
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#keyword"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#constant"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        },
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(let|do|while)\\b"
+                }
+            ]
+        },
+        "function": {
+            "patterns": [
+                {
+                    "name": "entity.name.function",
+                    "match": "\\b(head|tail)\\b"
+                }
+            ]
+        },
+        "constant": {
+            "patterns": [
+                {
+                    "name": "constant.language",
+                    "match": "\\b(true|false|hello|\"NULL\")\\b"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.lc2"
+}
