@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "User",
+    "type": "object",
+    "properties": {
+        "mainGrammarPath": {
+            "type": "string"
+        },
+        "languageName": {
+            "type": "string"
+        },
+        "fileExtensions": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "grammar": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "type",
+                    "values"
+                ]
+            }
+        }
+    },
+    "required": [
+        "mainGrammarPath",
+        "languageName",
+        "fileExtensions",
+        "grammar"
+    ]
+}

@@ -13,45 +13,7 @@ import * as Strings from "./Strings";
 import * as TerminalUtils from "./TerminalUtils";
 import * as VSCodeUtils from "./VSCodeUtils";
 
-// export async function buildGrammar(project: Project): Promise<void> {
-//     const projectPath =
-//         await FileSystemEntryUtils.findTopMostFileSystemEntryWithName(
-//             vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? "",
-//             "config.bnf.json"
-//         );
-
-//     window.showInformationMessage(`Project directory: ${projectPath}`);
-
-//     const grammarPath: string | undefined =
-//         window.activeTextEditor?.document.uri.fsPath;
-
-//     if (grammarPath === undefined) {
-//         ConsoleUtils.log("No grammar file open");
-//         window.showErrorMessage("No grammar file is open.");
-//         return;
-//     }
-
-//     project = new Project(projectPath || "");
-
-//     window.showInformationMessage(
-//         (await project.getConfig()).languageName ?? ""
-//     );
-
-//     buildGrammarCommands(project);
-
-//     const bnfTokens: Token[] = await BNFParser.parseBNFFile(grammarPath);
-
-//     // const textmateGrammar: string = generateTextmateJson(
-//     //     bnfTokens,
-//     //     project.getLanguageName()
-//     // );
-
-//     // const grammarName: string = jsonObject.contributes;
-
-//     // ConsoleUtils.log("Grammar name: " + grammarName);
-// }
-
-export async function buildGrammarCommands(project: Project): Promise<void> {
+export async function buildGrammar(project: Project): Promise<void> {
     await TerminalUtils.executeCommand(
         "mkdir -p " + project.getBuildDirectory(),
         project.getProjectDirectory()

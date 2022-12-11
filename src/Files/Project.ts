@@ -137,6 +137,11 @@ export class Project {
             return undefined;
         }
 
+        this.grammarPath = path.join(
+            this.rootPath,
+            config.mainGrammarPath ?? ""
+        );
+
         return config;
     }
 }
