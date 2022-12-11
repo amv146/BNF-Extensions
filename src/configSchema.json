@@ -4,24 +4,36 @@
     "type": "object",
     "properties": {
         "mainGrammarPath": {
+            "description": "",
             "type": "string"
         },
         "languageName": {
+            "description": "",
             "type": "string"
         },
         "fileExtensions": {
+            "description": "",
             "type": "array",
             "items": {
+                "pattern": "^\\.[a-zA-Z0-9]+$",
                 "type": "string"
             }
         },
         "grammar": {
+            "description": "",
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
                     "type": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "constant",
+                            "keyword",
+                            "operator",
+                            "comment",
+                            "function"
+                        ]
                     },
                     "values": {
                         "type": "array",
