@@ -19,36 +19,6 @@
                 "language": "lc",
                 "scopeName": "source.lc",
                 "path": "languages/syntaxes/lc.tmLanguage.json"
-            },
-            {
-                "language": "lc2",
-                "scopeName": "source.lc2",
-                "path": "languages/syntaxes/lc2.tmLanguage.json"
-            },
-            {
-                "language": "lc5",
-                "scopeName": "source.lc5",
-                "path": "languages/syntaxes/lc5.tmLanguage.json"
-            },
-            {
-                "language": "lc4",
-                "scopeName": "source.lc4",
-                "path": "languages/syntaxes/lc4.tmLanguage.json"
-            },
-            {
-                "language": "lc4",
-                "scopeName": "source.lc4",
-                "path": "languages/syntaxes/lc4.tmLanguage.json"
-            },
-            {
-                "language": "lc4",
-                "scopeName": "source.lc4",
-                "path": "languages/syntaxes/lc4.tmLanguage.json"
-            },
-            {
-                "language": "lc0",
-                "scopeName": "source.lc0",
-                "path": "languages/syntaxes/lc0.tmLanguage.json"
             }
         ],
         "commands": [
@@ -146,6 +116,16 @@
                 "id": "lc0",
                 "extensions": [
                     ".lc0"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda Nat 1",
+                    "lc11"
+                ],
+                "id": "lc11",
+                "extensions": [
+                    ".lc11"
                 ]
             }
         ]

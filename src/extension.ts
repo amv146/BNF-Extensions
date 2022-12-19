@@ -43,9 +43,13 @@ export function activate(context: vscode.ExtensionContext) {
     // context.subscriptions.push(buildGrammarDisposable);
     context.subscriptions.push(createConfigFileDisposable);
 
-    vscode.workspace.onDidOpenTextDocument(async (event) => {
+    vscode.window.onDidChangeActiveTextEditor(async (event) => {
+        if (!event) {
+            return;
+        }
+
         const projects: Project[] = Project.findTopMostProjects(
-            path.dirname(event.fileName)
+            path.dirname(event.document.fileName)
         );
 
         if (projects.length > 0) {
