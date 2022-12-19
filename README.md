@@ -9,9 +9,19 @@ as a good starting point for creating syntax highlighting for any language.
 ### Quick Start
 
 1. Open up the context menu by right clicking the folder which you want to create a Project in.
-2. Click on `Create Config File`.
+2. Click on `Create Config File`. 
+
+![createConfigFile](https://user-images.githubusercontent.com/39172404/208337028-f2974af4-b7dc-429b-8d92-4c6f34edd525.gif)
+
 3. Fill in the prompts with the appropriate information. It will first ask you to select a BNFC grammar file. If none are found, you can pick none. It will then ask you for the name of the project and the main file extension of the language. This file extension should be in the form of `.ext` and not `ext`. The extension will be used to determine which files to apply the syntax highlighting to.
+![createConfigFilePrompts](https://user-images.githubusercontent.com/39172404/208337104-e6edfb2b-a1b1-4f5b-bf76-881f3ea99e3c.gif)
+
 4. After completing the prompts, a new `config.bnfc.json` file will be created in the root of the project where the context menu was opened. This file contains the base information that was provided in the prompts.
+![Screenshot 2022-12-18 at 6 40 28 PM](https://user-images.githubusercontent.com/39172404/208337175-00538073-1e54-4da0-aa75-3067112d22c3.png)
+
+5. Inside the config file, update the grammar to create syntax highlighting for the language it defines.
+![Screenshot 2022-12-18 at 6 41 42 PM](https://user-images.githubusercontent.com/39172404/208337311-6cbf378b-fe1a-42e0-bc08-fc7c062cba6f.png)
+
 
 ### Config File
 
