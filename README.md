@@ -22,6 +22,7 @@ as a good starting point for creating syntax highlighting for any language.
 5. Inside the config file, update the grammar to create syntax highlighting for the language it defines.
 ![Screenshot 2022-12-18 at 6 41 42 PM](https://user-images.githubusercontent.com/39172404/208337311-6cbf378b-fe1a-42e0-bc08-fc7c062cba6f.png)
 
+6. After updating the grammar in the config file and saving it, restart VSCode. If when you restart, an error pops up in the bottom right saying that "Extensions have been modified on disk", and prompts you to reload - click reload window.
 
 ### Config File
 
