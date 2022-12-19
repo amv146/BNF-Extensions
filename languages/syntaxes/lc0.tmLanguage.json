@@ -1,0 +1,65 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda Nat 0",
+    "patterns": [
+        {
+            "include": "#constant"
+        },
+        {
+            "include": "#keyword"
+        },
+        {
+            "include": "#operator"
+        },
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#function"
+        }
+    ],
+    "repository": {
+        "constant": {
+            "patterns": [
+                {
+                    "name": "constant.language",
+                    "match": "\\b(true|false)\\b"
+                }
+            ]
+        },
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(if|let|else|then|case)\\b"
+                }
+            ]
+        },
+        "operator": {
+            "patterns": [
+                {
+                    "name": "keyword.operator",
+                    "match": "\\+|\\-|\\->|=="
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        },
+        "function": {
+            "patterns": [
+                {
+                    "name": "entity.name.function",
+                    "match": "\\b(length)\\b"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.lc0"
+}

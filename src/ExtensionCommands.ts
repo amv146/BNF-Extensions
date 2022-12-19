@@ -12,6 +12,9 @@ import * as PackageUtils from "./Files/Package/PackageUtils";
 import * as Strings from "./Strings";
 import * as TerminalUtils from "./TerminalUtils";
 import * as VSCodeUtils from "./VSCodeUtils";
+import { log } from "./ConsoleUtils";
+import { rootPath } from "./Paths";
+import { addProject } from "./StorageUtils";
 
 export async function buildGrammar(project: Project): Promise<void> {
     await TerminalUtils.executeCommand(
@@ -25,9 +28,17 @@ export async function buildGrammar(project: Project): Promise<void> {
     );
 }
 
-export async function createConfigFile(): Promise<void> {
-    const selectedEntryPath: string =
-        await VSCodeUtils.getSelectedExplorerFileSystemEntry();
+export async function createConfigFile(file: string): Promise<Project | undefined> {
+    let selectedEntryPath: string =
+        file || (await VSCodeUtils.getSelectedExplorerFileSystemEntry());
+
+    if (FileSystemEntryUtils.isFile(selectedEntryPath)) {
+        window.showErrorMessage(
+            "Please select a directory to create the config file in."
+        );
+
+        return;
+    }
 
     const grammarFiles: string[] = await Project.findGrammarFiles(
         selectedEntryPath
@@ -67,7 +78,12 @@ export async function createConfigFile(): Promise<void> {
         Strings.configFileName
     );
 
+    const project: Project = new Project(configFilePath, config);
+    addProject(project);
+
     FileSystemEntryUtils.writeJsonFile(configFilePath, config);
 
     PackageUtils.addContributesFromConfig(config);
+
+    return project;
 }

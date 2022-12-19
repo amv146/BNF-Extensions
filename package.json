@@ -12,13 +12,43 @@
     "activationEvents": [
         "*"
     ],
-    "main": "./out/extension.js",
+    "main": "./out/Extension.js",
     "contributes": {
         "grammars": [
             {
                 "language": "lc",
                 "scopeName": "source.lc",
                 "path": "languages/syntaxes/lc.tmLanguage.json"
+            },
+            {
+                "language": "lc2",
+                "scopeName": "source.lc2",
+                "path": "languages/syntaxes/lc2.tmLanguage.json"
+            },
+            {
+                "language": "lc5",
+                "scopeName": "source.lc5",
+                "path": "languages/syntaxes/lc5.tmLanguage.json"
+            },
+            {
+                "language": "lc4",
+                "scopeName": "source.lc4",
+                "path": "languages/syntaxes/lc4.tmLanguage.json"
+            },
+            {
+                "language": "lc4",
+                "scopeName": "source.lc4",
+                "path": "languages/syntaxes/lc4.tmLanguage.json"
+            },
+            {
+                "language": "lc4",
+                "scopeName": "source.lc4",
+                "path": "languages/syntaxes/lc4.tmLanguage.json"
+            },
+            {
+                "language": "lc0",
+                "scopeName": "source.lc0",
+                "path": "languages/syntaxes/lc0.tmLanguage.json"
             }
         ],
         "commands": [
@@ -32,6 +62,13 @@
             }
         ],
         "menus": {
+            "explorer/context": [
+                {
+                    "command": "bnf-extensions.createConfigFile",
+                    "when": "explorerResourceIsFolder",
+                    "group": "navigation@1"
+                }
+            ],
             "commandPalette": [
                 {
                     "command": "bnf-extensions.buildGrammar",
@@ -49,6 +86,66 @@
                 "id": "lc",
                 "extensions": [
                     ".lc"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda Calculus 2",
+                    "lc2"
+                ],
+                "id": "lc2",
+                "extensions": [
+                    ".lc2"
+                ]
+            },
+            {
+                "aliases": [
+                    "lc",
+                    "lc5"
+                ],
+                "id": "lc5",
+                "extensions": [
+                    ".lc5"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "lc4"
+                ],
+                "id": "lc4",
+                "extensions": [
+                    ".lc4"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "lc4"
+                ],
+                "id": "lc4",
+                "extensions": [
+                    ".lc4"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "lc4"
+                ],
+                "id": "lc4",
+                "extensions": [
+                    ".lc4"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda Nat 0",
+                    "lc0"
+                ],
+                "id": "lc0",
+                "extensions": [
+                    ".lc0"
                 ]
             }
         ]

@@ -6,11 +6,17 @@ import { window, Uri } from "vscode";
 
 import * as ExtensionCommands from "./ExtensionCommands";
 import { Project } from "./Files/Project";
+import { log } from "./ConsoleUtils";
+import { getStorageProjects } from "./StorageUtils";
+import { StorageProject } from "./StorageProject";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
-let project: Promise<Project>;
+let selectProjectStatusBarItem: vscode.StatusBarItem;
+let projects: Project[] = [];
+let selectedProject: Project;
+export let storageManager: vscode.Memento;
 
 export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
@@ -20,18 +26,49 @@ export function activate(context: vscode.ExtensionContext) {
     //     "bnf-extensions.buildGrammar",
     //     buildGrammar
     // );
+    storageManager = context.globalState;
+
+    selectProjectStatusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Left,
+        100
+    );
 
     let createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
-        ExtensionCommands.createConfigFile
+        (file) => {
+            ExtensionCommands.createConfigFile(file?.fsPath);
+        }
     );
 
     // context.subscriptions.push(buildGrammarDisposable);
     context.subscriptions.push(createConfigFileDisposable);
 
-    project = Project.findTopMostProject(
+    vscode.workspace.onDidOpenTextDocument(async (event) => {
+        const projects: Project[] = Project.findTopMostProjects(
+            path.dirname(event.fileName)
+        );
+
+        if (projects.length > 0) {
+            selectedProject = projects[0];
+            log(selectedProject.getConfigPath());
+        }
+
+        updateSelectedProjectStatusBarItem();
+    });
+
+
+    selectedProject = Project.findTopMostProjects(
         vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
-    );
+    )[0];
+}
+
+async function updateSelectedProjectStatusBarItem() {
+    if (selectedProject) {
+        selectProjectStatusBarItem.text = `$(file-directory) ${
+            (await selectedProject.getConfig())?.languageName ?? "Unknown"
+        }`;
+        selectProjectStatusBarItem.show();
+    }
 }
 
 // This method is called when your extension is deactivated
