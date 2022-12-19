@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as vscode from "vscode";
 import { workspace, window } from "vscode";
 
 import * as ConfigUtils from "./Config/ConfigUtils";
@@ -8,10 +9,12 @@ import * as PackageUtils from "./Package/PackageUtils";
 import * as Paths from "../Paths";
 import * as Strings from "../Strings";
 import * as TextmateUtils from "../Textmate/TextmateUtils";
+
+import * as ConsoleUtils from "../ConsoleUtils";
+import * as StorageUtils from "../StorageUtils";
+
 import { Config } from "./Config/Config";
-import { Token } from "../Tokens/Token";
-import { log } from "../ConsoleUtils";
-import { parseBNFFile } from "./BNFParser/BNFParser";
+import * as VSCodeUtils from "../VSCodeUtils";
 
 export const enum DirectoryName {
     build = "build",
@@ -26,52 +29,25 @@ export class Project {
     private grammarPath: string = "";
     private config: Promise<Config | undefined>;
 
-    public constructor(configPath: string) {
+    public constructor(configPath: string, config?: Config) {
         this.configPath = configPath;
         this.rootPath = path.dirname(configPath);
 
-        this.config = this.readConfig();
+        this.config = config ? Promise.resolve(config) : this.readConfig();
 
         workspace.onDidSaveTextDocument(async (document) => {
             if (document.fileName === this.configPath) {
-                const currentConfig: Config | undefined = await this.config;
-                const tempConfig: Config | undefined = await this.readConfig();
-
-                if (tempConfig === undefined || currentConfig === undefined) {
-                    return;
-                }
-
-                PackageUtils.updateContributesFromConfig(
-                    currentConfig,
-                    tempConfig
-                );
-
-                this.config = Promise.resolve(tempConfig);
-
-                const textmateGrammar: string =
-                    TextmateUtils.generateTextmateJson(
-                        ConfigUtils.generateTokensFromConfigGrammar(tempConfig),
-                        tempConfig.languageName,
-                        ConfigUtils.getLanguageId(tempConfig)
-                    );
-
-                fs.writeFile(
-                    Paths.getLanguageSyntaxPath(
-                        ConfigUtils.getLanguageId(tempConfig)
-                    ),
-                    textmateGrammar,
-                    (err) => {
-                        if (err) {
-                            log(err.message);
-                        }
-                    }
-                );
+                this.rewritePackageJson();
             }
         });
     }
 
     public async getConfig(): Promise<Config | undefined> {
-        return await this.config;
+        return this.config;
+    }
+
+    public getConfigPath(): string {
+        return this.configPath;
     }
 
     public getBuildDirectory(): string {
@@ -98,27 +74,97 @@ export class Project {
         return path.join(this.rootPath, DirectoryName.test);
     }
 
-    public static async findTopMostProject(rootPath: string): Promise<Project> {
-        const configPath =
-            (await FileSystemEntryUtils.findTopMostFileSystemEntryWithName(
-                rootPath,
-                Strings.configFileName
-            )) ?? "";
+    public async rewritePackageJson(): Promise<void> {
+        const currentConfig: Config | undefined = await this.config;
+        const tempConfig: Config | undefined = await this.readConfig();
 
-        const newProject: Project = new Project(configPath);
-        const grammarPath: string | undefined = (await newProject.getConfig())
-            ?.mainGrammarPath;
-
-        if (grammarPath) {
-            parseBNFFile(
-                path.join(newProject.getProjectDirectory(), grammarPath)
-            );
+        if (tempConfig === undefined || currentConfig === undefined) {
+            return;
         }
 
-        return newProject;
+        PackageUtils.updateContributesFromConfig(currentConfig, tempConfig);
+
+        this.config = Promise.resolve(tempConfig);
+
+        const textmateGrammar: string = TextmateUtils.generateTextmateJson(
+            ConfigUtils.generateTokensFromConfigGrammar(tempConfig),
+            tempConfig.languageName,
+            ConfigUtils.getLanguageId(tempConfig)
+        );
+
+        fs.writeFile(
+            Paths.getLanguageSyntaxPath(ConfigUtils.getLanguageId(tempConfig)),
+            textmateGrammar,
+            (err) => {
+                if (err) {
+                    ConsoleUtils.log(err.message);
+                }
+            }
+        );
+
+        return window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: "Updating project highlighting",
+                cancellable: false,
+            },
+            async (progress, token) => {
+                
+            }
+        );
+    }
+
+    public static findTopMostProjects(rootPath: string): Project[] {
+        let projects: Project[] = StorageUtils.getProjects();
+
+        projects = projects.filter((project) => {
+            return Paths.isPathInside(project.getConfigPath(), rootPath);
+        });
+
+        projects = projects.sort((a, b) => {
+            return (
+                Paths.getDistanceToDirectory(
+                    rootPath,
+                    a.getProjectDirectory()
+                ) -
+                Paths.getDistanceToDirectory(rootPath, b.getProjectDirectory())
+            );
+        });
+
+        return projects;
+    }
+
+    public static async findTopMostProjectsOld(
+        rootPath: string,
+        maxNumberOfProjects?: number
+    ): Promise<Project[]> {
+        return window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: "Loading project",
+                cancellable: false,
+            },
+            async (progress, token) => {
+                const projects: Project[] = [];
+                const configPaths: string[] =
+                    await FileSystemEntryUtils.findClosestFileSystemEntriesWithName(
+                        rootPath,
+                        Strings.configFileName,
+                        maxNumberOfProjects
+                    );
+
+                for (const configPath of configPaths) {
+                    const project: Project = new Project(configPath);
+                    projects.push(project);
+                }
+
+                return projects;
+            }
+        );
     }
 
     public static findGrammarFiles(rootPath: string): Promise<string[]> {
+        ConsoleUtils.log(rootPath.toString());
         return FileSystemEntryUtils.findClosestFilesWithExtension(
             rootPath,
             Strings.grammarFileExtension

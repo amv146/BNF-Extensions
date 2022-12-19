@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 export async function getSelectedExplorerFileSystemEntry(): Promise<string> {
     const originalClipboard = await vscode.env.clipboard.readText();
@@ -8,6 +9,10 @@ export async function getSelectedExplorerFileSystemEntry(): Promise<string> {
     const selectedEntryPath: string = await vscode.env.clipboard.readText(); // returns a string
 
     await vscode.env.clipboard.writeText(originalClipboard);
+
+    if (selectedEntryPath === ".") {
+        return getWorkspaceRootPath();
+    }
 
     return selectedEntryPath;
 }
