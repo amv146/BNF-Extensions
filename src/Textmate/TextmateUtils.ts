@@ -92,11 +92,17 @@ function generateBasicPattern(
     const tokensRegex: string = tokens
         .map((token) => escapeRegex(token.name))
         .join("|");
+    
+    if (wordBoundary) {
+        return {
+            name: TokenUtils.tokenTypeToTextmateScope(tokenType),
+            match: "\\b(" + tokensRegex + ")\\b",
+        };
+    }
 
     return {
         name: TokenUtils.tokenTypeToTextmateScope(tokenType),
-        match:
-            (wordBoundary && "\\b(") + tokensRegex + (wordBoundary && ")\\b"),
+        match: tokensRegex,
     };
 }
 
