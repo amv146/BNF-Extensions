@@ -108,26 +108,17 @@ export class Project {
                 title: "Updating project highlighting",
                 cancellable: false,
             },
-            async (progress, token) => {
-                
-            }
+            async (progress, token) => {}
         );
     }
 
     public static findTopMostProjects(rootPath: string): Project[] {
         let projects: Project[] = StorageUtils.getProjects();
 
-        projects = projects.filter((project) => {
-            return Paths.isPathInside(project.getConfigPath(), rootPath);
-        });
-
         projects = projects.sort((a, b) => {
             return (
-                Paths.getDistanceToDirectory(
-                    rootPath,
-                    a.getProjectDirectory()
-                ) -
-                Paths.getDistanceToDirectory(rootPath, b.getProjectDirectory())
+                Paths.getDistanceBetweenPaths(rootPath, a.getConfigPath()) -
+                Paths.getDistanceBetweenPaths(rootPath, b.getConfigPath())
             );
         });
 

@@ -60,7 +60,6 @@ export function activate(context: vscode.ExtensionContext) {
         updateSelectedProjectStatusBarItem();
     });
 
-
     selectedProject = Project.findTopMostProjects(
         vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
     )[0];
