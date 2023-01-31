@@ -34,12 +34,6 @@ export class Project {
         this.rootPath = path.dirname(configPath);
 
         this.config = config ? Promise.resolve(config) : this.readConfig();
-
-        workspace.onDidSaveTextDocument(async (document) => {
-            if (document.fileName === this.configPath) {
-                this.rewritePackageJson();
-            }
-        });
     }
 
     public async getConfig(): Promise<Config | undefined> {

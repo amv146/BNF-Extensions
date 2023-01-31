@@ -14,7 +14,6 @@ import { StorageProject } from "./StorageProject";
 // Your extension is activated the very first time the command is executed
 
 let selectProjectStatusBarItem: vscode.StatusBarItem;
-let projects: Project[] = [];
 let selectedProject: Project;
 export let storageManager: vscode.Memento;
 
@@ -58,6 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         updateSelectedProjectStatusBarItem();
+    });
+
+    vscode.workspace.onDidSaveTextDocument(async (document) => {
+        if (path.extname(document.fileName) === ".bnf.json") {
+            selectedProject.rewritePackageJson();
+        }
     });
 
     selectedProject = Project.findTopMostProjects(
