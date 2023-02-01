@@ -11,7 +11,7 @@ import * as Strings from "../Strings";
 import * as TextmateUtils from "../Textmate/TextmateUtils";
 
 import * as ConsoleUtils from "../ConsoleUtils";
-import * as StorageUtils from "../StorageUtils";
+import * as StorageUtils from "../Storage/StorageUtils";
 
 import { Config } from "./Config/Config";
 import * as VSCodeUtils from "../VSCodeUtils";

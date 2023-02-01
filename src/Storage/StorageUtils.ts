@@ -1,11 +1,10 @@
 import { Memento } from "vscode";
-import * as Extension from "./Extension";
-import { Project } from "./Files/Project";
+import * as Extension from "@/Extension";
+import { Project } from "@/Files/Project";
 import { StorageProject } from "./StorageProject";
 
 export async function addProject(project: Project): Promise<void> {
-    const storageProjects: StorageProject[] =
-        getStorageProjects();
+    const storageProjects: StorageProject[] = getStorageProjects();
 
     storageProjects.push({
         config: await project.getConfig(),
@@ -16,8 +15,7 @@ export async function addProject(project: Project): Promise<void> {
 }
 
 export function getProjects(): Project[] {
-    const storageProjects: StorageProject[] =
-        getStorageProjects();
+    const storageProjects: StorageProject[] = getStorageProjects();
 
     return storageProjects.map((storageProject) => {
         return new Project(storageProject.configPath, storageProject.config);

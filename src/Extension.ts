@@ -4,11 +4,12 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { window, Uri } from "vscode";
 
-import * as ExtensionCommands from "./ExtensionCommands";
-import { Project } from "./Files/Project";
-import { log } from "./ConsoleUtils";
-import { getStorageProjects } from "./StorageUtils";
-import { StorageProject } from "./StorageProject";
+import * as ExtensionCommands from "@/ExtensionCommands";
+import * as Strings from "@/Strings";
+import { Project } from "@/Files/Project";
+import { log } from "@/ConsoleUtils";
+import { getStorageProjects } from "@/Storage/StorageUtils";
+import { StorageProject } from "@/Storage/StorageProject";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -31,6 +32,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.StatusBarAlignment.Left,
         100
     );
+
+    selectedProject = Project.findTopMostProjects(
+        vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
+    )[0];
 
     let createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
@@ -60,14 +65,12 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     vscode.workspace.onDidSaveTextDocument(async (document) => {
-        if (path.extname(document.fileName) === ".bnf.json") {
+        log(document.fileName);
+        if (path.basename(document.fileName) === Strings.configFileName) {
+            log("Config file saved");
             selectedProject.rewritePackageJson();
         }
     });
-
-    selectedProject = Project.findTopMostProjects(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
-    )[0];
 }
 
 async function updateSelectedProjectStatusBarItem() {

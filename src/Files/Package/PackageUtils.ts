@@ -49,7 +49,7 @@ export function removeContributesFromConfig(config: Config): void {
         return;
     }
 
-    let languageId: string = ConfigUtils.getLanguageId(config);
+    const languageId: string = ConfigUtils.getLanguageId(config);
 
     packageJson.contributes.grammars = packageJson.contributes.grammars.filter(
         (grammarContribute: GrammarContribute) => {

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "target": "ES2020",
+        "target": "ES6",
         "outDir": "out",
         "baseUrl": "./src",
         "paths": {
@@ -9,12 +9,8 @@
         },
         "lib": ["ES2020"],
         "sourceMap": true,
-        "strict": true /* enable all strict type-checking options */
-        /* Additional Checks */
-        // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
-        // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
-        // "noUnusedParameters": true,  /* Report errors on unused parameters. */
+        "strict": true
     },
-    "include": ["**/*.ts"],
+    "include": ["src"],
     "exclude": ["node_modules", "out", "./src/test/**/*"]
 }
