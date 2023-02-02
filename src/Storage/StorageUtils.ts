@@ -1,7 +1,7 @@
 import { Memento } from "vscode";
 import * as Extension from "@/Extension";
 import { Project } from "@/Files/Project";
-import { StorageProject } from "./StorageProject";
+import { StorageProject } from "@/Storage/StorageProject";
 
 export async function addProject(project: Project): Promise<void> {
     const storageProjects: StorageProject[] = getStorageProjects();
