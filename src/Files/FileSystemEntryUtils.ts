@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 
-import * as ConsoleUtils from "../ConsoleUtils";
+import * as ConsoleUtils from "@/ConsoleUtils";
 
 export async function findClosestFileSystemEntriesWithName(
     startPath: string,

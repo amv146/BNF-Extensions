@@ -1,13 +1,14 @@
 import * as fs from "fs";
-import * as path from "path";
 
-import * as ConfigUtils from "../Config/ConfigUtils";
-import * as ConsoleUtils from "../../ConsoleUtils";
-import * as Paths from "../../Paths";
-import * as Strings from "../../Strings";
-import { Config } from "../Config/Config";
-import { GrammarContribute } from "./GrammarContribute";
-import { LanguageContribute } from "./LanguageContribute";
+import { Config } from "@/Files/Config/Config";
+import { GrammarContribute } from "@/Files/Package/GrammarContribute";
+import { LanguageContribute } from "@/Files/Package/LanguageContribute";
+
+import * as ConfigUtils from "@/Files/Config/ConfigUtils";
+import * as ConsoleUtils from "@/ConsoleUtils";
+import * as Paths from "@/Paths";
+import * as PathUtils from "@/PathUtils";
+import * as Strings from "@/Strings";
 
 let packageJson = require(Paths.packageJsonPath);
 
@@ -91,20 +92,25 @@ export function updateContributesFromConfig(
     }
 
     let oldLanguageId: string = ConfigUtils.getLanguageId(oldConfig);
+    let doesGrammarContributeExist: boolean = false;
+    let doesLanguageContributeExist: boolean = false;
 
     packageJson.contributes.grammars = packageJson.contributes.grammars.map(
         (grammarContribute: GrammarContribute) => {
-            if (
-                grammarContribute.language === oldLanguageId ||
-                grammarContribute.scopeName ===
-                    Strings.scopeNamePrefix + oldLanguageId
-            ) {
+            if (grammarContribute.language === oldLanguageId) {
+                doesGrammarContributeExist = true;
                 return createGrammarContributeFromConfig(newConfig);
             }
 
             return grammarContribute;
         }
     );
+
+    if (!doesGrammarContributeExist) {
+        packageJson.contributes.grammars.push(
+            createGrammarContributeFromConfig(newConfig)
+        );
+    }
 
     packageJson.contributes.languages = packageJson.contributes.languages.map(
         (languageContribute: LanguageContribute) => {
@@ -113,12 +119,19 @@ export function updateContributesFromConfig(
                 languageContribute.aliases.indexOf(oldConfig.languageName) !==
                     -1
             ) {
+                doesLanguageContributeExist = true;
                 return createLanguageContributeFromConfig(newConfig);
             }
 
             return languageContribute;
         }
     );
+
+    if (!doesLanguageContributeExist) {
+        packageJson.contributes.languages.push(
+            createLanguageContributeFromConfig(newConfig)
+        );
+    }
 
     fs.writeFileSync(
         Paths.packageJsonPath,
@@ -131,8 +144,8 @@ function createGrammarContributeFromConfig(config: Config): GrammarContribute {
 
     return {
         language: languageId,
+        path: PathUtils.getLanguageSyntaxPath(languageId, true),
         scopeName: Strings.scopeNamePrefix + languageId,
-        path: Paths.getLanguageSyntaxPath(languageId, true),
     };
 }
 

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { window } from "vscode";
 
-import * as VSCodeUtils from "./VSCodeUtils";
+import * as VSCodeUtils from "@/VSCodeUtils";
 
 interface GrammarFileQuickPickItem extends vscode.QuickPickItem {
     path: string;

@@ -1,7 +1,7 @@
-import * as RegExps from "./RegExps";
 import * as XRegExp from "xregexp";
-
 import { ExecArray } from "xregexp";
+
+import * as RegExps from "@/RegExps";
 
 XRegExp.install({
     // Enables support for astral code points in Unicode addons (implicitly sets flag A)

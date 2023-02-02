@@ -1,4 +1,3 @@
-import { Memento } from "vscode";
 import * as Extension from "@/Extension";
 import { Project } from "@/Files/Project";
 import { StorageProject } from "@/Storage/StorageProject";

@@ -1,20 +1,18 @@
+import { window } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { workspace, window } from "vscode";
 
-import * as ConfigUtils from "./Config/ConfigUtils";
-import * as FileSystemEntryUtils from "./FileSystemEntryUtils";
-import * as PackageUtils from "./Package/PackageUtils";
-import * as Paths from "../Paths";
-import * as Strings from "../Strings";
-import * as TextmateUtils from "../Textmate/TextmateUtils";
-
-import * as ConsoleUtils from "../ConsoleUtils";
-import * as StorageUtils from "../Storage/StorageUtils";
-
-import { Config } from "./Config/Config";
-import * as VSCodeUtils from "../VSCodeUtils";
+import { Config } from "@/Files/Config/Config";
+import * as ConsoleUtils from "@/ConsoleUtils";
+import * as ConfigUtils from "@/Files/Config/ConfigUtils";
+import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
+import * as PackageUtils from "@/Files/Package/PackageUtils";
+import * as Paths from "@/Paths";
+import * as PathUtils from "@/PathUtils";
+import * as StorageUtils from "@/Storage/StorageUtils";
+import * as Strings from "@/Strings";
+import * as TextmateUtils from "@/Textmate/TextmateUtils";
 
 export const enum DirectoryName {
     build = "build",
@@ -24,14 +22,14 @@ export const enum DirectoryName {
 }
 
 export class Project {
-    private rootPath: string;
+    private config: Promise<Config | undefined>;
     private configPath: string;
     private grammarPath: string = "";
-    private config: Promise<Config | undefined>;
+    private projectPath: string;
 
     public constructor(configPath: string, config?: Config) {
         this.configPath = configPath;
-        this.rootPath = path.dirname(configPath);
+        this.projectPath = path.dirname(configPath);
 
         this.config = config ? Promise.resolve(config) : this.readConfig();
     }
@@ -45,11 +43,11 @@ export class Project {
     }
 
     public getBuildDirectory(): string {
-        return path.join(this.rootPath, DirectoryName.build);
+        return path.join(this.projectPath, DirectoryName.build);
     }
 
     public getGrammarDirectory(): string {
-        return path.join(this.rootPath, DirectoryName.grammar);
+        return path.join(this.projectPath, DirectoryName.grammar);
     }
 
     public getGrammarPath(): string {
@@ -57,15 +55,7 @@ export class Project {
     }
 
     public getProjectDirectory(): string {
-        return this.rootPath;
-    }
-
-    public getSourceDirectory(): string {
-        return path.join(this.rootPath, DirectoryName.src);
-    }
-
-    public getTestDirectory(): string {
-        return path.join(this.rootPath, DirectoryName.test);
+        return this.projectPath;
     }
 
     public async rewritePackageJson(): Promise<void> {
@@ -87,7 +77,9 @@ export class Project {
         );
 
         fs.writeFile(
-            Paths.getLanguageSyntaxPath(ConfigUtils.getLanguageId(tempConfig)),
+            PathUtils.getLanguageSyntaxPath(
+                ConfigUtils.getLanguageId(tempConfig)
+            ),
             textmateGrammar,
             (err) => {
                 if (err) {
@@ -106,46 +98,17 @@ export class Project {
         );
     }
 
-    public static findTopMostProjects(rootPath: string): Project[] {
+    public static findTopMostProjects(path: string): Project[] {
         let projects: Project[] = StorageUtils.getProjects();
 
         projects = projects.sort((a, b) => {
             return (
-                Paths.getDistanceBetweenPaths(rootPath, a.getConfigPath()) -
-                Paths.getDistanceBetweenPaths(rootPath, b.getConfigPath())
+                PathUtils.getDistanceBetweenPaths(path, a.getConfigPath()) -
+                PathUtils.getDistanceBetweenPaths(path, b.getConfigPath())
             );
         });
 
         return projects;
-    }
-
-    public static async findTopMostProjectsOld(
-        rootPath: string,
-        maxNumberOfProjects?: number
-    ): Promise<Project[]> {
-        return window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: "Loading project",
-                cancellable: false,
-            },
-            async (progress, token) => {
-                const projects: Project[] = [];
-                const configPaths: string[] =
-                    await FileSystemEntryUtils.findClosestFileSystemEntriesWithName(
-                        rootPath,
-                        Strings.configFileName,
-                        maxNumberOfProjects
-                    );
-
-                for (const configPath of configPaths) {
-                    const project: Project = new Project(configPath);
-                    projects.push(project);
-                }
-
-                return projects;
-            }
-        );
     }
 
     public static findGrammarFiles(rootPath: string): Promise<string[]> {
@@ -169,7 +132,7 @@ export class Project {
         }
 
         this.grammarPath = path.join(
-            this.rootPath,
+            this.projectPath,
             config.mainGrammarPath ?? ""
         );
 

@@ -1,7 +1,8 @@
-import * as EnumUtils from "../../EnumUtils";
-import * as TokenUtils from "../../Tokens/TokenUtils";
-import { Config, ConfigGrammar } from "./Config";
-import { TokenType, Token } from "../../Tokens/Token";
+import { Config, ConfigGrammar } from "@/Files/Config/Config";
+import { Token, TokenType } from "@/Tokens/Token";
+
+import * as EnumUtils from "@/EnumUtils";
+import * as TokenUtils from "@/Tokens/TokenUtils";
 
 export function getLanguageId(config: Config): string {
     let languageId: string = config.fileExtensions[0];

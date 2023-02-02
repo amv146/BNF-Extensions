@@ -1,13 +1,10 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { window, Uri } from "vscode";
 
+import { Project } from "@/Files/Project";
+import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ExtensionCommands from "@/ExtensionCommands";
 import * as Strings from "@/Strings";
-import { Project } from "@/Files/Project";
-import { log } from "@/ConsoleUtils";
-import { getStorageProjects } from "@/Storage/StorageUtils";
-import { StorageProject } from "@/Storage/StorageProject";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -71,7 +68,7 @@ function registerUpdateStatusBarItemOnEditorChange() {
 
         if (projects.length > 0) {
             selectedProject = projects[0];
-            log(selectedProject.getConfigPath());
+            ConsoleUtils.log(selectedProject.getConfigPath());
         }
 
         updateSelectedProjectStatusBarItem();

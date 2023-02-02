@@ -1,13 +1,9 @@
-import * as FileSystemEntryUtils from "../FileSystemEntryUtils";
-import * as RegExpUtils from "../../RegExpUtils";
-import * as RegExps from "../../RegExps";
-import * as TextmateUtils from "../../Textmate/TextmateUtils";
-import { TokenType, Token } from "../../Tokens/Token";
 import { ExecArray } from "xregexp";
-import * as XRegExp from "xregexp";
-import { tokenTypeToTextmateScope } from "../../Tokens/TokenUtils";
-import { TextmateScope } from "../../Textmate/TextmateScope";
-import { log } from "../../ConsoleUtils";
+
+import { Token } from "@/Tokens/Token";
+import * as RegExps from "@/RegExps";
+import * as RegExpUtils from "@/RegExpUtils";
+import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 
 export async function parseBNFFile(grammarPath: string): Promise<Token[]> {
     const lines: string[] = await FileSystemEntryUtils.readFileLines(
