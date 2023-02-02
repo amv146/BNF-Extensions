@@ -1,5 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as path from "path";
 import * as vscode from "vscode";
 import { window, Uri } from "vscode";
@@ -47,6 +45,21 @@ export function activate(context: vscode.ExtensionContext) {
     // context.subscriptions.push(buildGrammarDisposable);
     context.subscriptions.push(createConfigFileDisposable);
 
+    registerUpdateStatusBarItemOnEditorChange();
+    registerOnSaveConfigFile();
+
+    updateSelectedProjectStatusBarItem();
+}
+
+function registerOnSaveConfigFile() {
+    vscode.workspace.onDidSaveTextDocument(async (document) => {
+        if (path.basename(document.fileName) === Strings.configFileName) {
+            selectedProject.rewritePackageJson();
+        }
+    });
+}
+
+function registerUpdateStatusBarItemOnEditorChange() {
     vscode.window.onDidChangeActiveTextEditor(async (event) => {
         if (!event) {
             return;
@@ -62,14 +75,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         updateSelectedProjectStatusBarItem();
-    });
-
-    vscode.workspace.onDidSaveTextDocument(async (document) => {
-        log(document.fileName);
-        if (path.basename(document.fileName) === Strings.configFileName) {
-            log("Config file saved");
-            selectedProject.rewritePackageJson();
-        }
     });
 }
 
