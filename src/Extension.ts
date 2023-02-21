@@ -8,8 +8,8 @@ import * as Strings from "@/Strings";
 import * as fs from "fs";
 import { Config } from "@/Files/Config/Config";
 import * as StorageUtils from "@/Storage/StorageUtils";
-import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
+import * as ProjectUtils from "@/Files/ProjectUtils";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
         100
     );
 
-    selectedProject = Project.findTopMostProjects(
+    selectedProject = ProjectUtils.findTopMostProjects(
         vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
     )[0];
 
@@ -58,32 +58,34 @@ function registerOnSaveConfigFile() {
         if (path.basename(document.fileName) === Strings.configFileName) {
             if (selectedProject) {
                 const inode: number | undefined = (
-                    await selectedProject.getConfig()
+                    await ProjectUtils.getConfig(selectedProject)
                 )?.inode;
 
-                let projects: Project[] = Project.findTopMostProjects(
+                let projects: Project[] = ProjectUtils.findTopMostProjects(
                     path.dirname(document.fileName)
                 );
 
                 if (inode === fs.statSync(document.fileName).ino) {
-                    selectedProject?.rewritePackageJson();
+                    ProjectUtils.rewritePackageJson(selectedProject);
                 } else {
                     projects = projects.filter(
-                        async (project) => (await project.getInode()) === inode
+                        async (project) =>
+                            (await ProjectUtils.getInode(project)) === inode
                     );
 
                     selectedProject = projects[0];
-                    selectedProject?.rewritePackageJson();
+                    ProjectUtils.rewritePackageJson(selectedProject);
 
                     updateSelectedProjectStatusBarItem();
                 }
             } else {
-                selectedProject = new Project(document.fileName);
+                selectedProject = ProjectUtils.create(document.fileName);
 
                 StorageUtils.addProject(selectedProject);
 
-                const config: Config | undefined =
-                    await selectedProject.getConfig();
+                const config: Config | undefined = await ProjectUtils.getConfig(
+                    selectedProject
+                );
 
                 if (config) {
                     PackageUtils.addContributesFromConfig(config);
@@ -101,13 +103,13 @@ function registerUpdateStatusBarItemOnEditorChange() {
             return;
         }
 
-        const projects: Project[] = Project.findTopMostProjects(
+        const projects: Project[] = ProjectUtils.findTopMostProjects(
             path.dirname(event.document.fileName)
         );
 
         if (projects.length > 0) {
             selectedProject = projects[0];
-            ConsoleUtils.log(selectedProject.getConfigPath());
+            ConsoleUtils.log(ProjectUtils.getConfigPath(selectedProject));
         }
 
         updateSelectedProjectStatusBarItem();
@@ -117,7 +119,8 @@ function registerUpdateStatusBarItemOnEditorChange() {
 async function updateSelectedProjectStatusBarItem() {
     if (selectedProject) {
         selectProjectStatusBarItem.text = `$(file-directory) ${
-            (await selectedProject.getConfig())?.languageName ?? "Unknown"
+            (await ProjectUtils.getConfig(selectedProject))?.languageName ??
+            "Unknown"
         }`;
         selectProjectStatusBarItem.show();
     }

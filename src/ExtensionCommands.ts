@@ -10,16 +10,19 @@ import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TerminalUtils from "@/TerminalUtils";
 import * as VSCodeUtils from "@/VSCodeUtils";
+import * as ProjectUtils from "@/Files/ProjectUtils";
 
 export async function buildGrammar(project: Project): Promise<void> {
     await TerminalUtils.executeCommand(
-        "mkdir -p " + project.getBuildDirectory(),
-        project.getProjectDirectory()
+        "mkdir -p " + ProjectUtils.getBuildDirectory(project),
+        ProjectUtils.getProjectDirectory(project)
     );
 
     await TerminalUtils.executeCommand(
-        "bnfc -m --haskell " + project.getGrammarPath() + " && make",
-        project.getBuildDirectory()
+        "bnfc -m --haskell " +
+            ProjectUtils.getGrammarPath(project) +
+            " && make",
+        ProjectUtils.getBuildDirectory(project)
     );
 }
 
@@ -37,7 +40,7 @@ export async function createConfigFile(
         return;
     }
 
-    const grammarFiles: string[] = await Project.findGrammarFiles(
+    const grammarFiles: string[] = await ProjectUtils.findGrammarFiles(
         selectedEntryPath
     );
 
@@ -75,7 +78,7 @@ export async function createConfigFile(
         Strings.configFileName
     );
 
-    const project: Project = new Project(configFilePath, config);
+    const project: Project = ProjectUtils.create(configFilePath, config);
     StorageUtils.addProject(project);
 
     FileSystemEntryUtils.writeJsonFile(configFilePath, config);
