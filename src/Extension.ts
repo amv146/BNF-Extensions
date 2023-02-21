@@ -5,12 +5,17 @@ import { Project } from "@/Files/Project";
 import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ExtensionCommands from "@/ExtensionCommands";
 import * as Strings from "@/Strings";
+import * as fs from "fs";
+import { Config } from "@/Files/Config/Config";
+import * as StorageUtils from "@/Storage/StorageUtils";
+import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
+import * as PackageUtils from "@/Files/Package/PackageUtils";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
 let selectProjectStatusBarItem: vscode.StatusBarItem;
-let selectedProject: Project;
+let selectedProject: Project | undefined;
 export let storageManager: vscode.Memento;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -51,7 +56,41 @@ export function activate(context: vscode.ExtensionContext) {
 function registerOnSaveConfigFile() {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
         if (path.basename(document.fileName) === Strings.configFileName) {
-            selectedProject.rewritePackageJson();
+            if (selectedProject) {
+                const inode: number | undefined = (
+                    await selectedProject.getConfig()
+                )?.inode;
+
+                let projects: Project[] = Project.findTopMostProjects(
+                    path.dirname(document.fileName)
+                );
+
+                if (inode === fs.statSync(document.fileName).ino) {
+                    selectedProject?.rewritePackageJson();
+                } else {
+                    projects = projects.filter(
+                        async (project) => (await project.getInode()) === inode
+                    );
+
+                    selectedProject = projects[0];
+                    selectedProject?.rewritePackageJson();
+
+                    updateSelectedProjectStatusBarItem();
+                }
+            } else {
+                selectedProject = new Project(document.fileName);
+
+                StorageUtils.addProject(selectedProject);
+
+                const config: Config | undefined =
+                    await selectedProject.getConfig();
+
+                if (config) {
+                    PackageUtils.addContributesFromConfig(config);
+                }
+
+                updateSelectedProjectStatusBarItem();
+            }
         }
     });
 }

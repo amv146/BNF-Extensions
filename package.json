@@ -19,6 +19,16 @@
                 "language": "lc",
                 "scopeName": "source.lc",
                 "path": "languages/syntaxes/lc.tmLanguage.json"
+            },
+            {
+                "language": "195061797",
+                "path": "languages/syntaxes/195061797.tmLanguage.json",
+                "scopeName": "source.195061797"
+            },
+            {
+                "language": "195061797",
+                "path": "languages/syntaxes/195061797.tmLanguage.json",
+                "scopeName": "source.195061797"
             }
         ],
         "commands": [
@@ -126,6 +136,26 @@
                 "id": "lc11",
                 "extensions": [
                     ".lc11"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "195061797"
+                ],
+                "id": "195061797",
+                "extensions": [
+                    ".lc4"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "195061797"
+                ],
+                "id": "195061797",
+                "extensions": [
+                    ".lc4"
                 ]
             }
         ]

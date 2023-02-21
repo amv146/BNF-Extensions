@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda nAt 4",
+    "patterns": [
+        {
+            "include": "#keyword"
+        }
+    ],
+    "repository": {
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(let)\\b"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.195061797"
+}

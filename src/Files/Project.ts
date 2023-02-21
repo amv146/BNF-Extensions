@@ -31,7 +31,9 @@ export class Project {
         this.configPath = configPath;
         this.projectPath = path.dirname(configPath);
 
-        this.config = config ? Promise.resolve(config) : this.readConfig();
+        this.config = config
+            ? Promise.resolve(config)
+            : Project.readConfig(configPath);
     }
 
     public async getConfig(): Promise<Config | undefined> {
@@ -54,13 +56,24 @@ export class Project {
         return this.grammarPath;
     }
 
+    public async getInode(): Promise<number | undefined> {
+        return (await this.config)?.inode;
+    }
+
     public getProjectDirectory(): string {
         return this.projectPath;
     }
 
     public async rewritePackageJson(): Promise<void> {
         const currentConfig: Config | undefined = await this.config;
-        const tempConfig: Config | undefined = await this.readConfig();
+        const tempConfig: Config | undefined = await Project.readConfig(
+            this.configPath
+        );
+
+        // this.grammarPath = path.join(
+        //     this.projectPath,
+        //     config.mainGrammarPath ?? ""
+        // );
 
         if (tempConfig === undefined || currentConfig === undefined) {
             return;
@@ -119,9 +132,11 @@ export class Project {
         );
     }
 
-    private async readConfig(): Promise<Config | undefined> {
+    public static async readConfig(
+        configPath: string
+    ): Promise<Config | undefined> {
         const config: Config | undefined =
-            await FileSystemEntryUtils.readJsonFile<Config>(this.configPath);
+            await FileSystemEntryUtils.readJsonFile<Config>(configPath);
 
         if (config === undefined) {
             window.showErrorMessage(
@@ -129,12 +144,10 @@ export class Project {
             );
 
             return undefined;
+        } else {
+            config.path = configPath;
+            config.inode = fs.statSync(configPath).ino;
         }
-
-        this.grammarPath = path.join(
-            this.projectPath,
-            config.mainGrammarPath ?? ""
-        );
 
         return config;
     }

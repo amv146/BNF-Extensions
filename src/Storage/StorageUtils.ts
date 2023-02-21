@@ -7,7 +7,8 @@ export async function addProject(project: Project): Promise<void> {
 
     storageProjects.push({
         config: await project.getConfig(),
-        configPath: project.getConfigPath(),
+        inode: (await project.getConfig())?.inode ?? 0,
+        path: project.getConfigPath(),
     });
 
     Extension.storageManager.update("projects", storageProjects);
@@ -17,7 +18,7 @@ export function getProjects(): Project[] {
     const storageProjects: StorageProject[] = getStorageProjects();
 
     return storageProjects.map((storageProject) => {
-        return new Project(storageProject.configPath, storageProject.config);
+        return new Project(storageProject.path, storageProject.config);
     });
 }
 
@@ -26,7 +27,8 @@ export async function setProjects(projects: Project[]): Promise<void> {
         projects.map(async (project) => {
             return {
                 config: await project.getConfig(),
-                configPath: project.getConfigPath(),
+                inode: (await project.getConfig())?.inode ?? 0,
+                path: project.getConfigPath(),
             };
         })
     );

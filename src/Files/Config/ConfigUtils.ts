@@ -5,13 +5,7 @@ import * as EnumUtils from "@/EnumUtils";
 import * as TokenUtils from "@/Tokens/TokenUtils";
 
 export function getLanguageId(config: Config): string {
-    let languageId: string = config.fileExtensions[0];
-
-    if (languageId.startsWith(".")) {
-        languageId = languageId.substring(1);
-    }
-
-    return languageId;
+    return "" + config.inode ?? "0";
 }
 
 export function generateTokensFromConfigGrammar(config: Config): Token[] {
