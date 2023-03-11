@@ -2,30 +2,18 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import { Project } from "@/Files/Project";
-import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ExtensionCommands from "@/ExtensionCommands";
 import * as Strings from "@/Strings";
 import * as fs from "fs";
-import { Config } from "@/Files/Config/Config";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
 import * as ProjectUtils from "@/Files/ProjectUtils";
-
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 
 let selectProjectStatusBarItem: vscode.StatusBarItem;
 let selectedProject: Project | undefined;
 export let storageManager: vscode.Memento;
 
 export function activate(context: vscode.ExtensionContext) {
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    // let buildGrammarDisposable = vscode.commands.registerCommand(
-    //     "bnf-extensions.buildGrammar",
-    //     buildGrammar
-    // );
     storageManager = context.globalState;
 
     selectProjectStatusBarItem = vscode.window.createStatusBarItem(
@@ -40,12 +28,22 @@ export function activate(context: vscode.ExtensionContext) {
     let createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
         (file) => {
+            console.log(file);
             ExtensionCommands.createConfigFile(file?.fsPath);
         }
     );
 
-    // context.subscriptions.push(buildGrammarDisposable);
+    let parseBNFFileDisposable = vscode.commands.registerCommand(
+        "bnf-extensions.parseBNFFile",
+        () => {
+            ExtensionCommands.parseBNFFile(
+                vscode.window.activeTextEditor?.document.fileName || ""
+            );
+        }
+    );
+
     context.subscriptions.push(createConfigFileDisposable);
+    context.subscriptions.push(parseBNFFileDisposable);
 
     registerUpdateStatusBarItemOnEditorChange();
     registerOnSaveConfigFile();
@@ -57,9 +55,7 @@ function registerOnSaveConfigFile() {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
         if (path.basename(document.fileName) === Strings.configFileName) {
             if (selectedProject) {
-                const inode: number | undefined = (
-                    await ProjectUtils.getConfig(selectedProject)
-                )?.inode;
+                const inode: number | undefined = selectedProject.inode;
 
                 let projects: Project[] = ProjectUtils.findTopMostProjects(
                     path.dirname(document.fileName)
@@ -69,8 +65,7 @@ function registerOnSaveConfigFile() {
                     ProjectUtils.rewritePackageJson(selectedProject);
                 } else {
                     projects = projects.filter(
-                        async (project) =>
-                            (await ProjectUtils.getInode(project)) === inode
+                        (project) => project.inode === inode
                     );
 
                     selectedProject = projects[0];
@@ -79,16 +74,14 @@ function registerOnSaveConfigFile() {
                     updateSelectedProjectStatusBarItem();
                 }
             } else {
-                selectedProject = ProjectUtils.create(document.fileName);
-
-                StorageUtils.addProject(selectedProject);
-
-                const config: Config | undefined = await ProjectUtils.getConfig(
-                    selectedProject
+                selectedProject = await ProjectUtils.readConfigIntoProject(
+                    document.fileName
                 );
 
-                if (config) {
-                    PackageUtils.addContributesFromConfig(config);
+                if (selectedProject) {
+                    StorageUtils.addProject(selectedProject);
+
+                    PackageUtils.addContributesFromProject(selectedProject);
                 }
 
                 updateSelectedProjectStatusBarItem();
@@ -109,22 +102,19 @@ function registerUpdateStatusBarItemOnEditorChange() {
 
         if (projects.length > 0) {
             selectedProject = projects[0];
-            ConsoleUtils.log(ProjectUtils.getConfigPath(selectedProject));
         }
 
         updateSelectedProjectStatusBarItem();
     });
 }
 
-async function updateSelectedProjectStatusBarItem() {
+function updateSelectedProjectStatusBarItem() {
     if (selectedProject) {
         selectProjectStatusBarItem.text = `$(file-directory) ${
-            (await ProjectUtils.getConfig(selectedProject))?.languageName ??
-            "Unknown"
+            selectedProject.languageName ?? "Unknown"
         }`;
         selectProjectStatusBarItem.show();
     }
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}

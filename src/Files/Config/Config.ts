@@ -9,6 +9,4 @@ export interface Config {
     fileExtensions: string[];
     mainGrammarPath: string;
     grammar?: ConfigGrammar[];
-    inode?: number;
-    path?: string;
 }

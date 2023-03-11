@@ -4,8 +4,9 @@ import { Token } from "@/Tokens/Token";
 import * as RegExps from "@/RegExps";
 import * as RegExpUtils from "@/RegExpUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
+import XRegExp = require("xregexp");
 
-export async function parseBNFFile(grammarPath: string): Promise<Token[]> {
+export async function parse(grammarPath: string): Promise<Token[]> {
     const lines: string[] = await FileSystemEntryUtils.readFileLines(
         grammarPath
     );
@@ -16,18 +17,24 @@ export async function parseBNFFile(grammarPath: string): Promise<Token[]> {
 }
 
 function parseLine(line: string): string[] {
-    const matches: ExecArray[] = RegExpUtils.findAllMatches(
-        RegExps.bnfValuePattern,
-        line
+    const lineMatch: ExecArray | null = XRegExp.exec(
+        line,
+        RegExps.bnfDeclarationPattern
     );
 
-    for (const match of matches) {
-        const value: string | undefined = match.groups?.value;
-
-        if (value === undefined) {
-            continue;
-        }
+    if (!lineMatch) {
+        return [];
     }
 
-    return matches.map((match) => match.groups?.value ?? "");
+    const syntaxGroup: string = lineMatch.groups?.syntax ?? "";
+
+    console.log(syntaxGroup);
+
+    RegExpUtils.findAllMatches(RegExps.bnfSyntaxPattern, syntaxGroup).forEach(
+        (match) => {
+            console.log(match.groups);
+        }
+    );
+
+    return [];
 }

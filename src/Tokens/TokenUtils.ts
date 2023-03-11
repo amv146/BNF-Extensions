@@ -9,6 +9,5 @@ export function createToken(name: string, type: TokenType): Token {
     return {
         name,
         type,
-        textmateScope: tokenTypeToTextmateScope(type),
     };
 }

@@ -1,7 +1,6 @@
-import { Config } from "@/Files/Config/Config";
+import { Config } from "./Config/Config";
 
-export interface Project {
-    config: Promise<Config | undefined>;
+export interface Project extends Config {
     configPath: string;
     inode: number;
 }

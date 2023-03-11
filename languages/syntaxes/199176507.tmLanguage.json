@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda Nat 5",
+    "patterns": [
+        {
+            "include": "#keyword"
+        }
+    ],
+    "repository": {
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(let|in|true|false|if|then|else|succ|pred|iszero|fix)\\b"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.199176507"
+}

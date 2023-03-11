@@ -11,5 +11,4 @@ export enum TokenType {
 export interface Token {
     name: string;
     type: TokenType;
-    textmateScope: TextmateScope;
 }

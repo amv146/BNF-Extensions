@@ -1,7 +1,8 @@
-import * as Strings from "../Strings";
-import * as TokenUtils from "../Tokens/TokenUtils";
-import { TextmatePattern } from "./TextmatePattern";
-import { Token, TokenType } from "../Tokens/Token";
+import * as Strings from "@/Strings";
+import * as TokenUtils from "@/Tokens/TokenUtils";
+import { TextmatePattern } from "@/Textmate/TextmatePattern";
+import { Token, TokenType } from "@/Tokens/Token";
+import { TextmateRepository } from "@/Textmate/TextmateRepository";
 
 export function generateTextmateJson(
     tokens: Token[],
@@ -9,7 +10,7 @@ export function generateTextmateJson(
     languageId: string
 ): string {
     const scopeNameRegex: RegExp = new RegExp(
-        `^${escapeRegex(languageName)}\\.(.*)$`
+        `^${escapeRegex(languageName)}\\.(.*)$/`
     );
 
     const scopeName: string = languageId;
@@ -28,37 +29,42 @@ export function generateTextmateJson(
 export function generatePatternIncludes(
     tokens: Token[]
 ): Record<string, string>[] {
-    let patternIncludes: { [key: string]: string }[] = [];
+    let patternIncludes: Record<string, string>[] = [];
 
-    const tokenTypes = new Set(tokens.map((token) => token.type));
+    const uniqueTokenTypes: Set<TokenType> = new Set(
+        tokens.map((token) => token.type)
+    );
 
-    for (const tokenType of tokenTypes) {
-        patternIncludes.push({
+    patternIncludes = Array.from(uniqueTokenTypes).map((tokenType) => {
+        return {
             include: `#${tokenType}`,
-        });
-    }
+        };
+    });
 
     return patternIncludes;
 }
 
-export function generateRepository(
-    tokens: Token[]
-): Record<string, Record<string, TextmatePattern[]>> {
-    const repository: Record<string, Record<string, TextmatePattern[]>> = {};
+export function generateRepository(tokens: Token[]): TextmateRepository {
+    const repository: TextmateRepository = {};
 
-    const tokensByType: Map<TokenType, Token[]> = new Map();
+    // Group tokens by their types into a map
+    const tokensByType: Map<TokenType, Token[]> = tokens.reduce(
+        (currentTokensByType, token) => {
+            const tokensOfType = currentTokensByType.get(token.type) ?? [];
 
-    tokens.forEach((token) => {
-        const tokensOfType = tokensByType.get(token.type) ?? [];
-        tokensOfType.push(token);
-        tokensByType.set(token.type, tokensOfType);
-    });
+            return currentTokensByType.set(token.type, [
+                ...tokensOfType,
+                token,
+            ]);
+        },
+        new Map<TokenType, Token[]>()
+    );
 
-    for (const [tokenType, tokensOfType] of tokensByType) {
+    tokensByType.forEach((tokensOfType, tokenType) => {
         repository[tokenType] = {
             patterns: [generatePattern(tokensOfType, tokenType)],
         };
-    }
+    });
 
     return repository;
 }
@@ -79,7 +85,7 @@ function generatePattern(
 
 function generateNumberPattern(): TextmatePattern {
     return {
-        match: "\\b[0-9]+\\b",
+        match: /\b[0-9]+\b/.source,
         name: "constant.numeric.lambda",
     };
 }
@@ -92,11 +98,11 @@ function generateBasicPattern(
     const tokensRegex: string = tokens
         .map((token) => escapeRegex(token.name))
         .join("|");
-    
+
     if (wordBoundary) {
         return {
             name: TokenUtils.tokenTypeToTextmateScope(tokenType),
-            match: "\\b(" + tokensRegex + ")\\b",
+            match: /\b(${tokensRegex})\b/.source,
         };
     }
 
@@ -116,7 +122,7 @@ function generateLineCommentPattern(
 
     return {
         begin: escapeRegex(tokensRegex),
-        end: "$",
+        end: /$/.source,
         name: TokenUtils.tokenTypeToTextmateScope(tokenType),
     };
 }

@@ -1,10 +1,10 @@
 import * as fs from "fs";
 
-import { Config } from "@/Files/Config/Config";
+import { Project } from "@/Files/Project";
 import { GrammarContribute } from "@/Files/Package/GrammarContribute";
 import { LanguageContribute } from "@/Files/Package/LanguageContribute";
 
-import * as ConfigUtils from "@/Files/Config/ConfigUtils";
+import * as ProjectUtils from "@/Files/ProjectUtils";
 import * as ConsoleUtils from "@/ConsoleUtils";
 import * as Paths from "@/Paths";
 import * as PathUtils from "@/PathUtils";
@@ -12,7 +12,7 @@ import * as Strings from "@/Strings";
 
 let packageJson = require(Paths.packageJsonPath);
 
-export function addContributesFromConfig(config: Config): void {
+export function addContributesFromProject(project: Project): void {
     if (!packageJson.contributes) {
         packageJson.contributes = {};
     }
@@ -26,11 +26,11 @@ export function addContributesFromConfig(config: Config): void {
     }
 
     packageJson.contributes.grammars.push(
-        createGrammarContributeFromConfig(config)
+        createGrammarContributeFromProject(project)
     );
 
     packageJson.contributes.languages.push(
-        createLanguageContributeFromConfig(config)
+        createLanguageContributeFromProject(project)
     );
 
     ConsoleUtils.log(JSON.stringify(packageJson, null, 4));
@@ -41,7 +41,7 @@ export function addContributesFromConfig(config: Config): void {
     );
 }
 
-export function removeContributesFromConfig(config: Config): void {
+export function removeContributesFromProject(project: Project): void {
     if (
         !packageJson.contributes ||
         !packageJson.contributes.grammars ||
@@ -50,7 +50,7 @@ export function removeContributesFromConfig(config: Config): void {
         return;
     }
 
-    const languageId: string = ConfigUtils.getLanguageId(config);
+    const languageId: string = ProjectUtils.getLanguageId(project);
 
     packageJson.contributes.grammars = packageJson.contributes.grammars.filter(
         (grammarContribute: GrammarContribute) => {
@@ -67,7 +67,7 @@ export function removeContributesFromConfig(config: Config): void {
             (languageContribute: LanguageContribute) => {
                 return (
                     languageContribute.id !== languageId &&
-                    languageContribute.aliases.indexOf(config.languageName) ===
+                    languageContribute.aliases.indexOf(project.languageName) ===
                         -1
                 );
             }
@@ -79,9 +79,9 @@ export function removeContributesFromConfig(config: Config): void {
     );
 }
 
-export function updateContributesFromConfig(
-    oldConfig: Config,
-    newConfig: Config
+export function updateContributesFromProject(
+    oldProject: Project,
+    newProject: Project
 ): void {
     if (
         !packageJson.contributes ||
@@ -91,15 +91,16 @@ export function updateContributesFromConfig(
         return;
     }
 
-    let oldLanguageId: string = ConfigUtils.getLanguageId(oldConfig);
+    const languageId: string = ProjectUtils.getLanguageId(oldProject);
     let doesGrammarContributeExist: boolean = false;
     let doesLanguageContributeExist: boolean = false;
 
     packageJson.contributes.grammars = packageJson.contributes.grammars.map(
         (grammarContribute: GrammarContribute) => {
-            if (grammarContribute.language === oldLanguageId) {
+            if (grammarContribute.language === languageId) {
                 doesGrammarContributeExist = true;
-                return createGrammarContributeFromConfig(newConfig);
+
+                return createGrammarContributeFromProject(newProject);
             }
 
             return grammarContribute;
@@ -108,19 +109,16 @@ export function updateContributesFromConfig(
 
     if (!doesGrammarContributeExist) {
         packageJson.contributes.grammars.push(
-            createGrammarContributeFromConfig(newConfig)
+            createGrammarContributeFromProject(newProject)
         );
     }
 
     packageJson.contributes.languages = packageJson.contributes.languages.map(
         (languageContribute: LanguageContribute) => {
-            if (
-                languageContribute.id === oldLanguageId ||
-                languageContribute.aliases.indexOf(oldConfig.languageName) !==
-                    -1
-            ) {
+            if (languageContribute.id === languageId) {
                 doesLanguageContributeExist = true;
-                return createLanguageContributeFromConfig(newConfig);
+
+                return createLanguageContributeFromProject(newProject);
             }
 
             return languageContribute;
@@ -129,7 +127,7 @@ export function updateContributesFromConfig(
 
     if (!doesLanguageContributeExist) {
         packageJson.contributes.languages.push(
-            createLanguageContributeFromConfig(newConfig)
+            createLanguageContributeFromProject(newProject)
         );
     }
 
@@ -139,8 +137,10 @@ export function updateContributesFromConfig(
     );
 }
 
-function createGrammarContributeFromConfig(config: Config): GrammarContribute {
-    let languageId: string = ConfigUtils.getLanguageId(config);
+function createGrammarContributeFromProject(
+    project: Project
+): GrammarContribute {
+    let languageId: string = ProjectUtils.getLanguageId(project);
 
     return {
         language: languageId,
@@ -149,14 +149,14 @@ function createGrammarContributeFromConfig(config: Config): GrammarContribute {
     };
 }
 
-function createLanguageContributeFromConfig(
-    config: Config
+function createLanguageContributeFromProject(
+    project: Project
 ): LanguageContribute {
-    let languageId: string = ConfigUtils.getLanguageId(config);
+    let languageId: string = ProjectUtils.getLanguageId(project);
 
     return {
-        aliases: [config.languageName, languageId],
+        aliases: [project.languageName, languageId],
         id: languageId,
-        extensions: config.fileExtensions,
+        extensions: project.fileExtensions,
     };
 }

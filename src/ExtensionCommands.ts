@@ -11,6 +11,7 @@ import * as Strings from "@/Strings";
 import * as TerminalUtils from "@/TerminalUtils";
 import * as VSCodeUtils from "@/VSCodeUtils";
 import * as ProjectUtils from "@/Files/ProjectUtils";
+import * as BNFParser from "@/Files/BNFParser/BNFParser";
 
 export async function buildGrammar(project: Project): Promise<void> {
     await TerminalUtils.executeCommand(
@@ -24,6 +25,10 @@ export async function buildGrammar(project: Project): Promise<void> {
             " && make",
         ProjectUtils.getBuildDirectory(project)
     );
+}
+
+export async function parseBNFFile(file: string) {
+    BNFParser.parse(file);
 }
 
 export async function createConfigFile(
@@ -78,12 +83,13 @@ export async function createConfigFile(
         Strings.configFileName
     );
 
-    const project: Project = ProjectUtils.create(configFilePath, config);
-    StorageUtils.addProject(project);
-
     FileSystemEntryUtils.writeJsonFile(configFilePath, config);
 
-    PackageUtils.addContributesFromConfig(config);
+    const project: Project = ProjectUtils.create(configFilePath, config);
+
+    StorageUtils.addProject(project);
+
+    PackageUtils.addContributesFromProject(project);
 
     return project;
 }

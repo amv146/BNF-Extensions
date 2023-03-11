@@ -4,6 +4,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import { Config } from "@/Files/Config/Config";
+import { Project } from "@/Files/Project";
 import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ConfigUtils from "@/Files/Config/ConfigUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
@@ -12,7 +13,7 @@ import * as PathUtils from "@/PathUtils";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TextmateUtils from "@/Textmate/TextmateUtils";
-import { Project } from "@/Files/Project";
+import { updateContributesFromProject } from "./Package/PackageUtils";
 
 export const enum DirectoryName {
     build = "build",
@@ -21,16 +22,15 @@ export const enum DirectoryName {
     test = "test",
 }
 
-export function create(configPath: string, config?: Config) {
+export function create(configPath: string, config: Config): Project {
     return {
-        config: config ? Promise.resolve(config) : readConfig(configPath),
-        configPath,
+        ...config,
+        configPath: configPath,
         inode: fs.statSync(configPath).ino,
     };
 }
 
 export function findGrammarFiles(rootPath: string): Promise<string[]> {
-    ConsoleUtils.log(rootPath.toString());
     return FileSystemEntryUtils.findClosestFilesWithExtension(
         rootPath,
         Strings.grammarFileExtension
@@ -42,8 +42,8 @@ export function findTopMostProjects(path: string): Project[] {
 
     projects = projects.sort((a, b) => {
         return (
-            PathUtils.getDistanceBetweenPaths(path, getConfigPath(a)) -
-            PathUtils.getDistanceBetweenPaths(path, getConfigPath(b))
+            PathUtils.getDistanceBetweenPaths(path, a.configPath) -
+            PathUtils.getDistanceBetweenPaths(path, b.configPath)
         );
     });
 
@@ -54,75 +54,65 @@ export function getBuildDirectory(project: Project): string {
     return path.join(getProjectDirectory(project), DirectoryName.build);
 }
 
-export async function getConfig(project: Project): Promise<Config | undefined> {
-    return project.config;
-}
-
-export function getConfigPath(project: Project): string {
-    return project.configPath;
-}
-
 export function getGrammarDirectory(project: Project): string {
     return path.join(getProjectDirectory(project), DirectoryName.grammar);
 }
 
-export async function getGrammarPath(project: Project): Promise<string> {
-    const config: Config | undefined = await getConfig(project);
-
+export function getGrammarPath(project: Project): string {
     return path.join(
         getProjectDirectory(project),
-        config?.mainGrammarPath ?? ""
+        project.mainGrammarPath ?? ""
     );
 }
 
-export async function getInode(project: Project): Promise<number | undefined> {
-    return (await project.config)?.inode;
+export function getInode(project: Project): number | undefined {
+    return project.inode;
+}
+
+export function getLanguageId(project: Project): string {
+    return "" + project.inode ?? "0";
 }
 
 export function getProjectDirectory(project: Project): string {
     return path.dirname(project.configPath);
 }
 
-export async function readConfig(
+export async function readConfigIntoProject(
     configPath: string
-): Promise<Config | undefined> {
+): Promise<Project | undefined> {
     const config: Config | undefined =
         await FileSystemEntryUtils.readJsonFile<Config>(configPath);
 
-    if (config === undefined) {
+    if (!config) {
         window.showErrorMessage(
             "Error reading config file. Please check the file for errors."
         );
 
         return undefined;
     } else {
-        config.path = configPath;
-        config.inode = fs.statSync(configPath).ino;
+        return create(configPath, config);
     }
-
-    return config;
 }
 
 export async function rewritePackageJson(project: Project): Promise<void> {
-    const currentConfig: Config | undefined = await project.config;
-    const newConfig: Config | undefined = await readConfig(project.configPath);
+    const newProject: Project | undefined = await readConfigIntoProject(
+        project.configPath
+    );
 
-    if (!newConfig || !currentConfig) {
+    if (!newProject || !project) {
         return;
     }
 
-    PackageUtils.updateContributesFromConfig(currentConfig, newConfig);
-
-    project.config = Promise.resolve(newConfig);
+    PackageUtils.updateContributesFromProject(project, newProject);
 
     const textmateGrammar: string = TextmateUtils.generateTextmateJson(
-        ConfigUtils.generateTokensFromConfigGrammar(newConfig),
-        newConfig.languageName,
-        ConfigUtils.getLanguageId(newConfig)
+        ConfigUtils.generateTokensFromConfigGrammar(newProject),
+        newProject.languageName,
+        getLanguageId(newProject)
     );
 
     fs.writeFile(
-        PathUtils.getLanguageSyntaxPath(ConfigUtils.getLanguageId(newConfig)),
+        PathUtils.getLanguageSyntaxPath(getLanguageId(newProject)),
         textmateGrammar,
         (err) => {
             if (err) {

@@ -4,10 +4,6 @@ import { Token, TokenType } from "@/Tokens/Token";
 import * as EnumUtils from "@/EnumUtils";
 import * as TokenUtils from "@/Tokens/TokenUtils";
 
-export function getLanguageId(config: Config): string {
-    return "" + config.inode ?? "0";
-}
-
 export function generateTokensFromConfigGrammar(config: Config): Token[] {
     const tokens: Token[] = [];
 
