@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "BNFC Project Config Schema",
     "type": "object",
     "properties": {
@@ -20,6 +20,16 @@
                 "type": "string"
             }
         },
+        "options": {
+            "description": "Extra syntax highlighting options.",
+            "type": "object",
+            "properties": {
+                "highlightNumbers": {
+                    "description": "Whether or not to highlight numbers.",
+                    "type": "boolean"
+                }
+            }
+        },
         "grammar": {
             "description": "The syntax highlighting rules for the language. These rules will be used to generate the syntax highlighting rules for the language.",
             "type": "array",
@@ -29,10 +39,11 @@
                     "type": {
                         "type": "string",
                         "enum": [
+                            "blockComment",
+                            "comment",
                             "constant",
                             "keyword",
                             "operator",
-                            "comment",
                             "function"
                         ]
                     },
@@ -40,6 +51,27 @@
                         "type": "array",
                         "items": {
                             "pattern": "^[\/a-zA-Z0-9_]+$",
+                            "type": "string"
+                        }
+                    }
+                },
+                "if": {
+                    "properties": {
+                        "type": {
+                            "const": "blockComment"
+                        }
+                    }
+                },
+                "then": {
+                    "required": [
+                        "start",
+                        "end"
+                    ],
+                    "properties": {
+                        "start": {
+                            "type": "string"
+                        },
+                        "end": {
                             "type": "string"
                         }
                     }

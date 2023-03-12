@@ -1,7 +1,6 @@
-import * as appRoot from "app-root-path";
 import * as path from "path";
 
-import * as Paths from "@/Paths";
+import * as Paths from "@/Files/Paths";
 import * as Strings from "@/Strings";
 
 export function isPathInside(childPath: string, parentPath: string): boolean {
@@ -26,12 +25,12 @@ export function findClosestCommonDirectory(
     path1 = path.normalize(path1);
     path2 = path.normalize(path2);
 
-    const path1Parts = path1.split(path.sep);
-    const path2Parts = path2.split(path.sep);
+    const path1Parts: string[] = path1.split(path.sep);
+    const path2Parts: string[] = path2.split(path.sep);
 
-    let commonPath = "";
+    let commonPath: string = "";
 
-    for (let i = 0; i < path1Parts.length; i++) {
+    for (let i = 0; i < path1Parts.length; ++i) {
         if (path1Parts[i] === path2Parts[i]) {
             commonPath += path1Parts[i] + path.sep;
         } else {
@@ -46,38 +45,40 @@ export function getDistanceBetweenPaths(path1: string, path2: string): number {
     path1 = path.normalize(path1);
     path2 = path.normalize(path2);
 
-    const closestCommonDirectory = findClosestCommonDirectory(path1, path2);
-
-    if (closestCommonDirectory === "") {
+    if (!isPathInside(path1, path2)) {
         return -1;
-    } else {
-        const path1PartsAfterCommonDirectory = path1
-            .slice(
-                path1.indexOf(closestCommonDirectory) +
-                    closestCommonDirectory.length
-            )
-            .split(path.sep);
-
-        const path2PartsAfterCommonDirectory = path2
-            .slice(
-                path2.indexOf(closestCommonDirectory) +
-                    closestCommonDirectory.length
-            )
-            .split(path.sep);
-
-        return (
-            path1PartsAfterCommonDirectory.length +
-            path2PartsAfterCommonDirectory.length
-        );
     }
+
+    const closestCommonDirectory: string = findClosestCommonDirectory(
+        path1,
+        path2
+    );
+
+    const path1PartsAfterCommonDirectory = path1
+        .slice(
+            path1.indexOf(closestCommonDirectory) +
+                closestCommonDirectory.length
+        )
+        .split(path.sep);
+
+    const path2PartsAfterCommonDirectory = path2
+        .slice(
+            path2.indexOf(closestCommonDirectory) +
+                closestCommonDirectory.length
+        )
+        .split(path.sep);
+
+    return (
+        path1PartsAfterCommonDirectory.length +
+        path2PartsAfterCommonDirectory.length
+    );
 }
 
 export const getLanguageSyntaxPath = (
     languageId: string,
     relative: boolean = false
-): string => {
-    return path.join(
+): string =>
+    path.join(
         relative ? Paths.relativeSyntaxesPath : Paths.absoluteSyntaxesPath,
         languageId + Strings.textmateGrammarFileExtension
     );
-};

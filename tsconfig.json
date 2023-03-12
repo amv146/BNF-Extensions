@@ -4,6 +4,7 @@
         "target": "ES6",
         "outDir": "out",
         "baseUrl": "./src",
+        "noUncheckedIndexedAccess": true,
         "paths": {
             "@/*": ["*"]
         },

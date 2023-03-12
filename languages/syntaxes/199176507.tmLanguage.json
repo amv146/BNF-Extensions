@@ -4,6 +4,9 @@
     "patterns": [
         {
             "include": "#keyword"
+        },
+        {
+            "include": "#number"
         }
     ],
     "repository": {
@@ -12,6 +15,14 @@
                 {
                     "name": "keyword.control",
                     "match": "\\b(let|in|true|false|if|then|else|succ|pred|iszero|fix)\\b"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "((?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\\d+\\.\\d+)|(?:\\d+))",
+                    "name": "constant.numeric"
                 }
             ]
         }

@@ -28,7 +28,7 @@ export async function buildGrammar(project: Project): Promise<void> {
 }
 
 export async function parseBNFFile(file: string) {
-    BNFParser.parse(file);
+    BNFParser.parseGrammarFile(file);
 }
 
 export async function createConfigFile(
@@ -89,7 +89,7 @@ export async function createConfigFile(
 
     StorageUtils.addProject(project);
 
-    PackageUtils.addContributesFromProject(project);
+    PackageUtils.updateContributesFromProject(project);
 
     return project;
 }

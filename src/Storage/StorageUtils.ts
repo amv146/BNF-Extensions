@@ -3,7 +3,7 @@ import { Project } from "@/Files/Project";
 
 export async function addProject(project: Project): Promise<void> {
     const projects: Project[] = getProjects().filter(
-        (tempProject) => tempProject.inode !== project.inode
+        (tempProject) => tempProject.languageId !== project.languageId
     );
 
     projects.push(project);

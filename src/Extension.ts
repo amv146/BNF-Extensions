@@ -22,20 +22,19 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     selectedProject = ProjectUtils.findTopMostProjects(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? ""
+        vscode.window.activeTextEditor?.document.fileName || ""
     )[0];
 
     let createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
-        (file) => {
-            console.log(file);
+        async (file) => {
             ExtensionCommands.createConfigFile(file?.fsPath);
         }
     );
 
     let parseBNFFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.parseBNFFile",
-        () => {
+        async () => {
             ExtensionCommands.parseBNFFile(
                 vscode.window.activeTextEditor?.document.fileName || ""
             );
@@ -53,41 +52,66 @@ export function activate(context: vscode.ExtensionContext) {
 
 function registerOnSaveConfigFile() {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
-        if (path.basename(document.fileName) === Strings.configFileName) {
-            if (selectedProject) {
-                const inode: number | undefined = selectedProject.inode;
+        if (path.basename(document.fileName) !== Strings.configFileName) {
+            return;
+        }
 
-                let projects: Project[] = ProjectUtils.findTopMostProjects(
-                    path.dirname(document.fileName)
-                );
+        if (selectedProject) {
+            const currentProjectLanguageId: string = selectedProject.languageId;
 
-                if (inode === fs.statSync(document.fileName).ino) {
-                    ProjectUtils.rewritePackageJson(selectedProject);
-                } else {
-                    projects = projects.filter(
-                        (project) => project.inode === inode
-                    );
+            const languageId: string = ProjectUtils.getLanguageId(
+                fs.statSync(document.fileName).ino
+            );
 
-                    selectedProject = projects[0];
-                    ProjectUtils.rewritePackageJson(selectedProject);
-
-                    updateSelectedProjectStatusBarItem();
-                }
+            if (currentProjectLanguageId === languageId) {
+                selectedProject = await updateProject(selectedProject);
             } else {
-                selectedProject = await ProjectUtils.readConfigIntoProject(
+                const projects: Project[] = ProjectUtils.findTopMostProjects(
                     document.fileName
                 );
 
-                if (selectedProject) {
-                    StorageUtils.addProject(selectedProject);
+                const newSelectedProject: Project | undefined = projects.find(
+                    (project) => project.languageId === languageId
+                );
 
-                    PackageUtils.addContributesFromProject(selectedProject);
+                if (newSelectedProject) {
+                    selectedProject = await updateProject(newSelectedProject);
+                } else {
+                    selectedProject = await ProjectUtils.readConfigIntoProject(
+                        document.fileName
+                    );
+
+                    if (!selectedProject) {
+                        selectedProject = projects[0];
+                    }
                 }
-
-                updateSelectedProjectStatusBarItem();
             }
+        } else {
+            selectedProject = await ProjectUtils.readConfigIntoProject(
+                document.fileName
+            );
         }
+
+        if (selectedProject) {
+            selectedProject = await updateProject(selectedProject);
+        }
+
+        updateSelectedProjectStatusBarItem();
     });
+}
+
+async function updateProject(project: Project): Promise<Project | undefined> {
+    const newProject: Project | undefined =
+        await ProjectUtils.readConfigIntoProject(project.configPath);
+
+    if (!newProject) {
+        return undefined;
+    }
+
+    StorageUtils.addProject(newProject);
+    ProjectUtils.rewritePackageJson(newProject);
+
+    return newProject;
 }
 
 function registerUpdateStatusBarItemOnEditorChange() {
@@ -97,11 +121,13 @@ function registerUpdateStatusBarItemOnEditorChange() {
         }
 
         const projects: Project[] = ProjectUtils.findTopMostProjects(
-            path.dirname(event.document.fileName)
+            event.document.fileName
         );
 
         if (projects.length > 0) {
             selectedProject = projects[0];
+        } else {
+            selectedProject = undefined;
         }
 
         updateSelectedProjectStatusBarItem();
@@ -113,8 +139,11 @@ function updateSelectedProjectStatusBarItem() {
         selectProjectStatusBarItem.text = `$(file-directory) ${
             selectedProject.languageName ?? "Unknown"
         }`;
-        selectProjectStatusBarItem.show();
+    } else {
+        selectProjectStatusBarItem.text = "";
     }
+
+    selectProjectStatusBarItem.show();
 }
 
 export function deactivate() {}

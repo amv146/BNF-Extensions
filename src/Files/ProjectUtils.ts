@@ -9,11 +9,10 @@ import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ConfigUtils from "@/Files/Config/ConfigUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
-import * as PathUtils from "@/PathUtils";
+import * as PathUtils from "@/Files/PathUtils";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TextmateUtils from "@/Textmate/TextmateUtils";
-import { updateContributesFromProject } from "./Package/PackageUtils";
 
 export const enum DirectoryName {
     build = "build",
@@ -25,8 +24,8 @@ export const enum DirectoryName {
 export function create(configPath: string, config: Config): Project {
     return {
         ...config,
-        configPath: configPath,
-        inode: fs.statSync(configPath).ino,
+        configPath,
+        languageId: getLanguageId(fs.statSync(configPath).ino),
     };
 }
 
@@ -37,17 +36,26 @@ export function findGrammarFiles(rootPath: string): Promise<string[]> {
     );
 }
 
-export function findTopMostProjects(path: string): Project[] {
-    let projects: Project[] = StorageUtils.getProjects();
+export function findTopMostProjects(currentPath: string): Project[] {
+    const projects: Project[] = StorageUtils.getProjects().filter((project) =>
+        PathUtils.isPathInside(currentPath, path.dirname(project.configPath))
+    );
 
-    projects = projects.sort((a, b) => {
-        return (
-            PathUtils.getDistanceBetweenPaths(path, a.configPath) -
-            PathUtils.getDistanceBetweenPaths(path, b.configPath)
-        );
+    return projects.sort((a, b) => {
+        const distance: number =
+            PathUtils.getDistanceBetweenPaths(
+                currentPath,
+                path.dirname(a.configPath)
+            ) -
+            PathUtils.getDistanceBetweenPaths(
+                currentPath,
+                path.dirname(b.configPath)
+            );
+
+        console.log(distance);
+
+        return distance;
     });
-
-    return projects;
 }
 
 export function getBuildDirectory(project: Project): string {
@@ -65,12 +73,8 @@ export function getGrammarPath(project: Project): string {
     );
 }
 
-export function getInode(project: Project): number | undefined {
-    return project.inode;
-}
-
-export function getLanguageId(project: Project): string {
-    return "" + project.inode ?? "0";
+export function getLanguageId(inode: number): string {
+    return "" + (inode ?? "0");
 }
 
 export function getProjectDirectory(project: Project): string {
@@ -85,7 +89,7 @@ export async function readConfigIntoProject(
 
     if (!config) {
         window.showErrorMessage(
-            "Error reading config file. Please check the file for errors."
+            Strings.errorReadingConfigFilePleaseCheckTheFileForErrors
         );
 
         return undefined;
@@ -99,20 +103,20 @@ export async function rewritePackageJson(project: Project): Promise<void> {
         project.configPath
     );
 
-    if (!newProject || !project) {
+    if (!newProject) {
         return;
     }
 
-    PackageUtils.updateContributesFromProject(project, newProject);
+    PackageUtils.updateContributesFromProject(newProject);
 
     const textmateGrammar: string = TextmateUtils.generateTextmateJson(
         ConfigUtils.generateTokensFromConfigGrammar(newProject),
         newProject.languageName,
-        getLanguageId(newProject)
+        newProject.languageId
     );
 
     fs.writeFile(
-        PathUtils.getLanguageSyntaxPath(getLanguageId(newProject)),
+        PathUtils.getLanguageSyntaxPath(newProject.languageId),
         textmateGrammar,
         (err) => {
             if (err) {

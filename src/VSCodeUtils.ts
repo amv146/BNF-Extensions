@@ -18,5 +18,5 @@ export async function getSelectedExplorerFileSystemEntry(): Promise<string> {
 }
 
 export function getWorkspaceRootPath(): string {
-    return vscode.workspace.workspaceFolders?.[0].uri.fsPath ?? "";
+    return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
 }

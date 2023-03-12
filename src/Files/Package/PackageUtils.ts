@@ -1,97 +1,24 @@
-import * as fs from "fs";
-
 import { Project } from "@/Files/Project";
 import { GrammarContribute } from "@/Files/Package/GrammarContribute";
 import { LanguageContribute } from "@/Files/Package/LanguageContribute";
-
-import * as ProjectUtils from "@/Files/ProjectUtils";
-import * as ConsoleUtils from "@/ConsoleUtils";
-import * as Paths from "@/Paths";
-import * as PathUtils from "@/PathUtils";
+import * as Paths from "@/Files/Paths";
+import * as PathUtils from "@/Files/PathUtils";
 import * as Strings from "@/Strings";
+import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 
 let packageJson = require(Paths.packageJsonPath);
 
-export function addContributesFromProject(project: Project): void {
+export function updateContributesFromProject(project: Project): void {
     if (!packageJson.contributes) {
         packageJson.contributes = {};
+    } else {
+        packageJson.contributes.grammars =
+            packageJson.contributes.grammars ?? [];
+        packageJson.contributes.languages =
+            packageJson.contributes.languages ?? [];
     }
 
-    if (!packageJson.contributes.grammars) {
-        packageJson.contributes.grammars = [];
-    }
-
-    if (!packageJson.contributes.languages) {
-        packageJson.contributes.languages = [];
-    }
-
-    packageJson.contributes.grammars.push(
-        createGrammarContributeFromProject(project)
-    );
-
-    packageJson.contributes.languages.push(
-        createLanguageContributeFromProject(project)
-    );
-
-    ConsoleUtils.log(JSON.stringify(packageJson, null, 4));
-
-    fs.writeFileSync(
-        Paths.packageJsonPath,
-        JSON.stringify(packageJson, null, 4)
-    );
-}
-
-export function removeContributesFromProject(project: Project): void {
-    if (
-        !packageJson.contributes ||
-        !packageJson.contributes.grammars ||
-        !packageJson.contributes.languages
-    ) {
-        return;
-    }
-
-    const languageId: string = ProjectUtils.getLanguageId(project);
-
-    packageJson.contributes.grammars = packageJson.contributes.grammars.filter(
-        (grammarContribute: GrammarContribute) => {
-            return (
-                grammarContribute.language !== languageId &&
-                grammarContribute.scopeName !==
-                    Strings.scopeNamePrefix + languageId
-            );
-        }
-    );
-
-    packageJson.contributes.languages =
-        packageJson.contributes.languages.filter(
-            (languageContribute: LanguageContribute) => {
-                return (
-                    languageContribute.id !== languageId &&
-                    languageContribute.aliases.indexOf(project.languageName) ===
-                        -1
-                );
-            }
-        );
-
-    fs.writeFileSync(
-        Paths.packageJsonPath,
-        JSON.stringify(packageJson, null, 4)
-    );
-}
-
-export function updateContributesFromProject(
-    oldProject: Project,
-    newProject: Project
-): void {
-    if (
-        !packageJson.contributes ||
-        !packageJson.contributes.grammars ||
-        !packageJson.contributes.languages
-    ) {
-        return;
-    }
-
-    const languageId: string = ProjectUtils.getLanguageId(oldProject);
+    const languageId: string = project.languageId;
     let doesGrammarContributeExist: boolean = false;
     let doesLanguageContributeExist: boolean = false;
 
@@ -100,7 +27,7 @@ export function updateContributesFromProject(
             if (grammarContribute.language === languageId) {
                 doesGrammarContributeExist = true;
 
-                return createGrammarContributeFromProject(newProject);
+                return createGrammarContributeFromProject(project);
             }
 
             return grammarContribute;
@@ -109,7 +36,7 @@ export function updateContributesFromProject(
 
     if (!doesGrammarContributeExist) {
         packageJson.contributes.grammars.push(
-            createGrammarContributeFromProject(newProject)
+            createGrammarContributeFromProject(project)
         );
     }
 
@@ -118,7 +45,7 @@ export function updateContributesFromProject(
             if (languageContribute.id === languageId) {
                 doesLanguageContributeExist = true;
 
-                return createLanguageContributeFromProject(newProject);
+                return createLanguageContributeFromProject(project);
             }
 
             return languageContribute;
@@ -127,20 +54,17 @@ export function updateContributesFromProject(
 
     if (!doesLanguageContributeExist) {
         packageJson.contributes.languages.push(
-            createLanguageContributeFromProject(newProject)
+            createLanguageContributeFromProject(project)
         );
     }
 
-    fs.writeFileSync(
-        Paths.packageJsonPath,
-        JSON.stringify(packageJson, null, 4)
-    );
+    FileSystemEntryUtils.writeJsonFile(Paths.packageJsonPath, packageJson);
 }
 
 function createGrammarContributeFromProject(
     project: Project
 ): GrammarContribute {
-    let languageId: string = ProjectUtils.getLanguageId(project);
+    const languageId: string = project.languageId;
 
     return {
         language: languageId,
@@ -152,7 +76,7 @@ function createGrammarContributeFromProject(
 function createLanguageContributeFromProject(
     project: Project
 ): LanguageContribute {
-    let languageId: string = ProjectUtils.getLanguageId(project);
+    const languageId: string = project.languageId;
 
     return {
         aliases: [project.languageName, languageId],

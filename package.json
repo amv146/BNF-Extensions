@@ -24,6 +24,16 @@
                 "language": "199176507",
                 "path": "languages/syntaxes/199176507.tmLanguage.json",
                 "scopeName": "source.199176507"
+            },
+            {
+                "language": "178239946",
+                "path": "languages/syntaxes/178239946.tmLanguage.json",
+                "scopeName": "source.178239946"
+            },
+            {
+                "language": "195061797",
+                "path": "languages/syntaxes/195061797.tmLanguage.json",
+                "scopeName": "source.195061797"
             }
         ],
         "commands": [
@@ -78,6 +88,26 @@
                 "id": "199176507",
                 "extensions": [
                     ".lc5"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda Nat 1",
+                    "178239946"
+                ],
+                "id": "178239946",
+                "extensions": [
+                    ".lc11"
+                ]
+            },
+            {
+                "aliases": [
+                    "Lambda nAt 4",
+                    "195061797"
+                ],
+                "id": "195061797",
+                "extensions": [
+                    ".lc4"
                 ]
             }
         ]

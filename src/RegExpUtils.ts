@@ -11,6 +11,10 @@ XRegExp.install({
     namespacing: true,
 });
 
+export function escapeRegex(string: String): string {
+    return string.replace(`[-[\]{}()*+?.,^$|#\s]`, "\\$&");
+}
+
 export function findAllMatches(
     regex: RegExp,
     text: string,
