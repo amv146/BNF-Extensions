@@ -84,8 +84,7 @@
                     }
                 },
                 "required": [
-                    "type",
-                    "values"
+                    "type"
                 ]
             }
         }
