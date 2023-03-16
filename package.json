@@ -10,15 +10,15 @@
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onStartupFinished"
     ],
     "main": "./out/Extension.js",
     "contributes": {
         "grammars": [
             {
-                "language": "199332766",
-                "path": "languages/syntaxes/199332766.tmLanguage.json",
-                "scopeName": "source.199332766"
+                "language": "199365597",
+                "path": "languages/syntaxes/199365597.tmLanguage.json",
+                "scopeName": "source.199365597"
             }
         ],
         "commands": [
@@ -56,12 +56,12 @@
         "languages": [
             {
                 "aliases": [
-                    "Lambda Nat 4 2",
-                    "199332766"
+                    ".lc1",
+                    "199365597"
                 ],
-                "id": "199332766",
+                "id": "199365597",
                 "extensions": [
-                    ".lc4"
+                    ".lc1"
                 ]
             }
         ]

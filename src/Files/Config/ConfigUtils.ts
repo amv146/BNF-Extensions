@@ -37,6 +37,18 @@ export function generateTokensFromConfigGrammar(config: Config): Token[] {
             type: TokenType.number,
         });
     }
+    if (config.options?.highlightStrings) {
+        tokens.push({
+            value: "string",
+            type: TokenType.string,
+        });
+    }
+    if (config.options?.highlightCharacters) {
+        tokens.push({
+            value: "character",
+            type: TokenType.character,
+        });
+    }
 
     return tokens;
 }

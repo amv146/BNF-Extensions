@@ -42,18 +42,18 @@ export function findGrammarFiles(rootPath: string): Promise<string[]> {
 
 export function findTopMostProjects(currentPath: string): Project[] {
     const projects: Project[] = StorageUtils.getProjects().filter((project) =>
-        PathUtils.isPathInside(currentPath, path.dirname(project.configPath))
+        PathUtils.isPathInside(currentPath, getProjectDirectory(project))
     );
 
     return projects.sort((leftProject, rightProject) => {
         return (
             PathUtils.getDistanceBetweenPaths(
                 currentPath,
-                path.dirname(leftProject.configPath)
+                getProjectDirectory(leftProject)
             ) -
             PathUtils.getDistanceBetweenPaths(
                 currentPath,
-                path.dirname(rightProject.configPath)
+                getProjectDirectory(rightProject)
             )
         );
     });
@@ -115,7 +115,7 @@ export async function updateProject(
 export async function updateProjectFiles(project: Project): Promise<void> {
     PackageUtils.updateContributesFromProjects([project]);
 
-    const textmateGrammar: TextmateFile = TextmateUtils.generateTextmate(
+    const textmateFile: TextmateFile = TextmateUtils.generateTextmate(
         ConfigUtils.generateTokensFromConfigGrammar(project),
         project.languageName,
         project.languageId
@@ -123,7 +123,7 @@ export async function updateProjectFiles(project: Project): Promise<void> {
 
     FileSystemEntryUtils.writeJsonFile(
         PathUtils.getLanguageSyntaxPath(project.languageId),
-        textmateGrammar
+        textmateFile
     );
 
     return window.withProgress(

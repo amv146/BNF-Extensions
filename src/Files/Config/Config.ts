@@ -16,6 +16,8 @@ export type ConfigGrammar = ConfigBlockComment | ConfigGrammarEntry;
 
 export interface ConfigOptions {
     highlightNumbers?: boolean;
+    highlightStrings?: boolean;
+    highlightCharacters?: boolean;
 }
 
 export interface Config {

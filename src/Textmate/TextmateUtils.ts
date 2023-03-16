@@ -73,6 +73,13 @@ function generateBlockCommentPattern(
     };
 }
 
+function generateCharacterPattern(): TextmatePattern {
+    return {
+        match: RegExps.characterPattern.source,
+        name: TokenUtils.tokenTypeToTextmateScope(TokenType.character),
+    };
+}
+
 function generateLineCommentPattern(tokens: RegularToken[]): TextmatePattern {
     const tokensRegex: string = generateJoinedTokenRegex(
         tokens,
@@ -93,6 +100,13 @@ function generateNumberPattern(): TextmatePattern {
     };
 }
 
+function generateStringPattern(): TextmatePattern {
+    return {
+        match: RegExps.stringPattern.source,
+        name: TokenUtils.tokenTypeToTextmateScope(TokenType.string),
+    };
+}
+
 function generatePattern(
     tokens: Token[],
     tokenType: TokenType
@@ -110,6 +124,10 @@ function generatePattern(
                 tokenType,
                 false
             );
+        case TokenType.string:
+            return generateStringPattern();
+        case TokenType.character:
+            return generateCharacterPattern();
         default:
             return generateBasicPattern(tokens as RegularToken[], tokenType);
     }

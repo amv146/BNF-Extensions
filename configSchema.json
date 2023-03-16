@@ -77,7 +77,6 @@
                         "values": {
                             "type": "array",
                             "items": {
-                                "pattern": "^[\/a-zA-Z0-9_]+$",
                                 "type": "string"
                             }
                         }

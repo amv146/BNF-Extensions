@@ -1,11 +1,13 @@
 export enum TokenType {
     blockComment = "blockComment",
+    character = "character",
     comment = "comment",
     constant = "constant",
     function = "function",
     keyword = "keyword",
     number = "number",
     operator = "operator",
+    string = "string",
     type = "type",
 }
 

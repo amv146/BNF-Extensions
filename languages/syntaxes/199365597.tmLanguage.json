@@ -10,6 +10,9 @@
         },
         {
             "include": "#comment"
+        },
+        {
+            "include": "#string"
         }
     ],
     "repository": {
@@ -35,6 +38,14 @@
                     "begin": "//",
                     "end": "$",
                     "name": "comment.line.character"
+                }
+            ]
+        },
+        "string": {
+            "patterns": [
+                {
+                    "match": "((?:\"(?:[^\"]|\")*\"))",
+                    "name": "string.quoted"
                 }
             ]
         }
