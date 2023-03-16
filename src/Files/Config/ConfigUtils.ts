@@ -1,7 +1,5 @@
 import { Config } from "@/Files/Config/Config";
-import { Token, TokenType } from "@/Tokens/Token";
-
-import * as EnumUtils from "@/EnumUtils";
+import { RegularToken, Token, TokenType } from "@/Tokens/Token";
 
 export function generateTokensFromConfigGrammar(config: Config): Token[] {
     if (!config.grammar) {
@@ -11,32 +9,26 @@ export function generateTokensFromConfigGrammar(config: Config): Token[] {
     let tokens: Token[] = [];
 
     config.grammar.forEach((configGrammarEntry) => {
-        const tokenType: TokenType | undefined = EnumUtils.fromStringValue(
-            TokenType,
-            configGrammarEntry.type
-        );
-
-        if (!tokenType) {
-            return;
-        } else if (configGrammarEntry.type === TokenType.blockComment) {
+        if (configGrammarEntry.type === TokenType.blockComment) {
             tokens.push({
-                value: "beginComment",
-                type: tokenType,
+                begin: configGrammarEntry.begin,
+                end: configGrammarEntry.end,
+                type: TokenType.blockComment,
             });
 
             return;
         } else if (!configGrammarEntry.values) {
             return;
-        }
-
-        tokens = tokens.concat(
-            configGrammarEntry.values.map((value) => {
-                return {
+        } else {
+            const newTokens: RegularToken[] = configGrammarEntry.values.map(
+                (value) => ({
+                    type: configGrammarEntry.type,
                     value,
-                    type: tokenType,
-                };
-            })
-        );
+                })
+            );
+
+            tokens = [...tokens, ...newTokens];
+        }
     });
 
     if (config.options?.highlightNumbers) {

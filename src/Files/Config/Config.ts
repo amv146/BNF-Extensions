@@ -1,15 +1,16 @@
 import { TokenType } from "@/Tokens/Token";
 
-export interface ConfigBlockComment {
+export type ConfigBlockComment = {
     type: TokenType.blockComment;
     begin: string;
     end: string;
-}
+};
 
-export interface ConfigGrammarEntry {
-    type: TokenType;
+// Type should be any token type that is not block comment
+export type ConfigGrammarEntry = {
+    type: Exclude<TokenType, TokenType.blockComment>;
     values: string[];
-}
+};
 
 export type ConfigGrammar = ConfigBlockComment | ConfigGrammarEntry;
 
@@ -21,7 +22,7 @@ export interface Config {
     $schema: string;
     languageName: string;
     fileExtensions: string[];
-    mainGrammarPath: string;
+    mainGrammarPath?: string;
     options?: ConfigOptions;
     grammar?: ConfigGrammar[];
 }

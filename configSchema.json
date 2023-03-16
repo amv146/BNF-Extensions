@@ -57,11 +57,11 @@
                 },
                 "then": {
                     "required": [
-                        "start",
+                        "begin",
                         "end"
                     ],
                     "properties": {
-                        "start": {
+                        "begin": {
                             "type": "string"
                         },
                         "end": {

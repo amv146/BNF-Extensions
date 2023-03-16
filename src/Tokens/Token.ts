@@ -6,17 +6,18 @@ export enum TokenType {
     keyword = "keyword",
     number = "number",
     operator = "operator",
+    type = "type",
 }
 
 export interface BlockCommentToken {
+    type: TokenType.blockComment;
     begin: string;
     end: string;
-    type: TokenType.blockComment;
 }
 
 export interface RegularToken {
+    type: Exclude<TokenType, TokenType.blockComment>;
     value: string;
-    type: TokenType;
 }
 
 export type Token = BlockCommentToken | RegularToken;

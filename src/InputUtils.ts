@@ -40,6 +40,11 @@ export async function promptForMainGrammarFile(
         }
     );
 
+    quickPickItems.push({
+        label: "None",
+        path: "",
+    });
+
     return (
         await window.showQuickPick(quickPickItems, {
             placeHolder: "Select a grammar file",

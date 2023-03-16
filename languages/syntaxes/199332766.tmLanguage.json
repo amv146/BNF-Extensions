@@ -1,0 +1,33 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda Nat 4 2",
+    "patterns": [
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#blockComment"
+        }
+    ],
+    "repository": {
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        },
+        "blockComment": {
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.199332766"
+}

@@ -7,4 +7,5 @@ export enum TextmateScope {
     keyword = "keyword.control",
     number = "constant.numeric",
     operator = "keyword.operator",
+    type = "storage.type",
 }

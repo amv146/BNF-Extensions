@@ -1,13 +1,12 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
-import { Project } from "@/Files/Project";
 import * as ExtensionCommands from "@/ExtensionCommands";
-import * as Strings from "@/Strings";
-import * as fs from "fs";
-import * as StorageUtils from "@/Storage/StorageUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
 import * as ProjectUtils from "@/Files/ProjectUtils";
+import * as StorageUtils from "@/Storage/StorageUtils";
+import * as Strings from "@/Strings";
+import { Project } from "@/Files/Project";
 
 let selectProjectStatusBarItem: vscode.StatusBarItem;
 let selectedProject: Project | undefined;
@@ -25,18 +24,20 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.activeTextEditor?.document.fileName || ""
     )[0];
 
-    let createConfigFileDisposable = vscode.commands.registerCommand(
+    const createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
         async (file) => {
-            ExtensionCommands.createConfigFile(file?.fsPath);
+            selectedProject = await ExtensionCommands.createConfigFile(
+                file?.fsPath
+            );
         }
     );
 
-    let parseBNFFileDisposable = vscode.commands.registerCommand(
-        "bnf-extensions.parseBNFFile",
+    const parseBNFFileDisposable = vscode.commands.registerCommand(
+        "bnf-extensions.parseGrammarFile",
         async () => {
-            ExtensionCommands.parseBNFFile(
-                vscode.window.activeTextEditor?.document.fileName || ""
+            selectedProject = await ExtensionCommands.parseGrammarFile(
+                selectedProject
             );
         }
     );
@@ -46,26 +47,26 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerUpdateStatusBarItemOnEditorChange();
     registerOnSaveConfigFile();
+    registerOnDeleteConfigFile();
 
     updateSelectedProjectStatusBarItem();
 }
 
-function registerOnSaveConfigFile() {
+function registerOnSaveConfigFile(): void {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
         if (path.basename(document.fileName) !== Strings.configFileName) {
             return;
         }
 
+        // If a project is currently selected, check if the saved file is the config file of the selected project.
         if (selectedProject) {
             const currentProjectLanguageId: string = selectedProject.languageId;
 
-            const languageId: string = ProjectUtils.getLanguageId(
-                fs.statSync(document.fileName).ino
+            const languageId: string = ProjectUtils.configPathToLanguageId(
+                document.fileName
             );
 
-            if (currentProjectLanguageId === languageId) {
-                selectedProject = await updateProject(selectedProject);
-            } else {
+            if (currentProjectLanguageId !== languageId) {
                 const projects: Project[] = ProjectUtils.findTopMostProjects(
                     document.fileName
                 );
@@ -74,17 +75,12 @@ function registerOnSaveConfigFile() {
                     (project) => project.languageId === languageId
                 );
 
-                if (newSelectedProject) {
-                    selectedProject = await updateProject(newSelectedProject);
-                } else {
-                    selectedProject = await ProjectUtils.readConfigIntoProject(
+                selectedProject =
+                    newSelectedProject ||
+                    (await ProjectUtils.readConfigIntoProject(
                         document.fileName
-                    );
-
-                    if (!selectedProject) {
-                        selectedProject = projects[0];
-                    }
-                }
+                    )) ||
+                    projects[0];
             }
         } else {
             selectedProject = await ProjectUtils.readConfigIntoProject(
@@ -92,26 +88,52 @@ function registerOnSaveConfigFile() {
             );
         }
 
-        if (selectedProject) {
-            selectedProject = await updateProject(selectedProject);
-        }
+        selectedProject = selectedProject
+            ? await ProjectUtils.updateProject(selectedProject)
+            : undefined;
 
         updateSelectedProjectStatusBarItem();
     });
 }
 
-async function updateProject(project: Project): Promise<Project | undefined> {
-    const newProject: Project | undefined =
-        await ProjectUtils.readConfigIntoProject(project.configPath);
+function registerOnDeleteConfigFile(): void {
+    vscode.workspace.onWillDeleteFiles(async (event) => {
+        const deletedConfigFilePaths: string[] = event.files
+            .map((file) => file.fsPath)
+            .filter(
+                (filePath) => path.basename(filePath) === Strings.configFileName
+            );
 
-    if (!newProject) {
-        return undefined;
-    }
+        console.log(deletedConfigFilePaths);
 
-    StorageUtils.addProject(newProject);
-    ProjectUtils.rewritePackageJson(newProject);
+        if (deletedConfigFilePaths.length === 0) {
+            return;
+        }
 
-    return newProject;
+        const deletedLanguageIds: string[] = deletedConfigFilePaths.map(
+            (filePath) => ProjectUtils.configPathToLanguageId(filePath)
+        );
+
+        if (selectedProject) {
+            if (deletedLanguageIds.includes(selectedProject.languageId)) {
+                const projects: Project[] = ProjectUtils.findTopMostProjects(
+                    vscode.window.activeTextEditor?.document.fileName || ""
+                );
+
+                selectedProject = projects[0];
+            }
+        }
+
+        const newProjects: Project[] = StorageUtils.getProjects().filter(
+            (project) => !deletedLanguageIds.includes(project.languageId)
+        );
+
+        StorageUtils.setProjects(newProjects);
+
+        PackageUtils.updateContributesFromProjects(newProjects);
+
+        updateSelectedProjectStatusBarItem();
+    });
 }
 
 function registerUpdateStatusBarItemOnEditorChange() {
@@ -124,11 +146,7 @@ function registerUpdateStatusBarItemOnEditorChange() {
             event.document.fileName
         );
 
-        if (projects.length > 0) {
-            selectedProject = projects[0];
-        } else {
-            selectedProject = undefined;
-        }
+        selectedProject = projects[0];
 
         updateSelectedProjectStatusBarItem();
     });
@@ -145,5 +163,3 @@ function updateSelectedProjectStatusBarItem() {
 
     selectProjectStatusBarItem.show();
 }
-
-export function deactivate() {}

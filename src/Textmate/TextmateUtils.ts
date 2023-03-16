@@ -10,27 +10,22 @@ import {
     TokenType,
 } from "@/Tokens/Token";
 import { TextmateRepository } from "@/Textmate/TextmateRepository";
+import { TextmateFile } from "@/Textmate/TextmateFile";
 
-export function generateTextmateJson(
+export function generateTextmate(
     tokens: Token[],
     languageName: string,
     languageId: string
-): string {
-    const scopeNameRegex: RegExp = new RegExp(
-        `^${RegExpUtils.escapeRegex(languageName)}\\.(.*)$/`
-    );
-
-    const scopeName: string = languageId;
-
-    const textmateJson = {
+): TextmateFile {
+    const textmate: TextmateFile = {
         $schema: Strings.textmateLanguageSchema,
         name: languageName,
         patterns: generatePatternIncludes(tokens),
         repository: generateRepository(tokens),
-        scopeName: "source." + scopeName,
+        scopeName: "source." + languageId,
     };
 
-    return JSON.stringify(textmateJson, null, 4);
+    return textmate;
 }
 
 function generateJoinedTokenRegex<T extends Token>(
@@ -45,7 +40,7 @@ function generateJoinedTokenRegex<T extends Token>(
 function generateBasicPattern(
     tokens: RegularToken[],
     tokenType: TokenType,
-    wordBoundary: boolean = true
+    wordBoundary = true
 ): TextmatePattern {
     const tokensRegex: string = generateJoinedTokenRegex(
         tokens,

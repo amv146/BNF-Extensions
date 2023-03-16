@@ -1,14 +1,14 @@
-import { Project } from "@/Files/Project";
+import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import { GrammarContribute } from "@/Files/Package/GrammarContribute";
 import { LanguageContribute } from "@/Files/Package/LanguageContribute";
-import * as Paths from "@/Files/Paths";
 import * as PathUtils from "@/Files/PathUtils";
+import * as Paths from "@/Files/Paths";
+import { Project } from "@/Files/Project";
 import * as Strings from "@/Strings";
-import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 
-let packageJson = require(Paths.packageJsonPath);
+const packageJson = require(Paths.packageJsonPath);
 
-export function updateContributesFromProject(project: Project): void {
+export function updateContributesFromProjects(projects: Project[]): void {
     if (!packageJson.contributes) {
         packageJson.contributes = {};
     } else {
@@ -18,45 +18,17 @@ export function updateContributesFromProject(project: Project): void {
             packageJson.contributes.languages ?? [];
     }
 
-    const languageId: string = project.languageId;
-    let doesGrammarContributeExist: boolean = false;
-    let doesLanguageContributeExist: boolean = false;
-
-    packageJson.contributes.grammars = packageJson.contributes.grammars.map(
-        (grammarContribute: GrammarContribute) => {
-            if (grammarContribute.language === languageId) {
-                doesGrammarContributeExist = true;
-
-                return createGrammarContributeFromProject(project);
-            }
-
-            return grammarContribute;
-        }
+    packageJson.contributes.grammars = createUpdatedContributesFromProjects(
+        projects,
+        createGrammarContributeFromProject,
+        (grammarContribute: GrammarContribute) => grammarContribute.language
     );
 
-    if (!doesGrammarContributeExist) {
-        packageJson.contributes.grammars.push(
-            createGrammarContributeFromProject(project)
-        );
-    }
-
-    packageJson.contributes.languages = packageJson.contributes.languages.map(
-        (languageContribute: LanguageContribute) => {
-            if (languageContribute.id === languageId) {
-                doesLanguageContributeExist = true;
-
-                return createLanguageContributeFromProject(project);
-            }
-
-            return languageContribute;
-        }
+    packageJson.contributes.languages = createUpdatedContributesFromProjects(
+        projects,
+        createLanguageContributeFromProject,
+        (languageContribute: LanguageContribute) => languageContribute.id
     );
-
-    if (!doesLanguageContributeExist) {
-        packageJson.contributes.languages.push(
-            createLanguageContributeFromProject(project)
-        );
-    }
 
     FileSystemEntryUtils.writeJsonFile(Paths.packageJsonPath, packageJson);
 }
@@ -83,4 +55,48 @@ function createLanguageContributeFromProject(
         id: languageId,
         extensions: project.fileExtensions,
     };
+}
+
+function createUpdatedContributesFromProjects<
+    T = LanguageContribute | GrammarContribute
+>(
+    projects: Project[],
+    createContributeFromProject: (project: Project) => T,
+    getContributeId: (contribute: T) => string
+): T[] {
+    const currentContributes: T[] = packageJson.contributes.languages as T[];
+
+    const contributeLanguageIds: string[] = currentContributes.map(
+        (contribute: T) => getContributeId(contribute)
+    );
+
+    const projectLanguageIds: string[] = projects.map(
+        (project) => project.languageId
+    );
+
+    const projectsToAdd: Project[] = projects.filter(
+        (project) => !contributeLanguageIds.includes(project.languageId)
+    );
+
+    const newContributes: T[] = currentContributes
+        .filter((contribute: T) =>
+            projectLanguageIds.includes(getContributeId(contribute))
+        )
+        .map((contribute: T) => {
+            const project: Project | undefined = projects.find(
+                (project) => project.languageId === getContributeId(contribute)
+            );
+
+            if (project) {
+                return createContributeFromProject(project);
+            }
+
+            return contribute;
+        });
+
+    projectsToAdd.forEach((project: Project) => {
+        newContributes.push(createContributeFromProject(project));
+    });
+
+    return newContributes;
 }

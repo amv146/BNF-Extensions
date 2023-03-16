@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
+import { PathOrFileDescriptor } from "fs";
 
 import * as ConsoleUtils from "@/ConsoleUtils";
 
@@ -169,7 +170,10 @@ export async function readFileLines(filePath: string): Promise<string[]> {
     return lines;
 }
 
-export function writeJsonFile(filePath: string, content: any): void {
+export function writeJsonFile(
+    filePath: PathOrFileDescriptor,
+    content: any
+): void {
     fs.writeFile(filePath, JSON.stringify(content, null, 4), (err) => {
         if (err) {
             ConsoleUtils.log("" + err);

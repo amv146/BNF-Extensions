@@ -1,11 +1,14 @@
-export const configFileName: string = "config.bnf.json";
-export const errorReadingConfigFilePleaseCheckTheFileForErrors: string =
+export const configFileName = "config.bnf.json";
+export const errorReadingConfigFilePleaseCheckTheFileForErrors =
     "Error reading config file. Please check the file for errors.";
-export const grammarFileExtension: string = ".cf";
-export const loadingProjects: string = "Loading projects...";
-export const scopeNamePrefix: string = "source.";
-export const textmateGrammarFileExtension: string = ".tmLanguage.json";
-export const textmateLanguageSchema: string =
+export const grammarFileExtension = ".cf";
+export const loadingProjects = "Loading projects...";
+export const scopeNamePrefix = "source.";
+export const textmateGrammarFileExtension = ".tmLanguage.json";
+export const textmateLanguageSchema =
     "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json";
-export const configSchema: string =
+export const configSchema =
     "https://raw.githubusercontent.com/amv146/BNFC-Extensions/master/configSchema.json";
+export const updatingProjectHighlighting = "Updating project highlighting...";
+export const pleaseSelectADirectoryToCreateTheConfigFileIn =
+    "Please select a directory to create the config file in.";

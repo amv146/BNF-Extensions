@@ -1,17 +1,17 @@
+import * as fs from "fs";
 import * as path from "path";
 import { window } from "vscode";
 
-import { Config } from "@/Files/Config/Config";
-import { Project } from "@/Files/Project";
+import * as BNFParser from "@/Files/BNFParser/BNFParser";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
-import * as PackageUtils from "@/Files/Package/PackageUtils";
+import * as ProjectUtils from "@/Files/ProjectUtils";
 import * as InputUtils from "@/InputUtils";
-import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TerminalUtils from "@/TerminalUtils";
+import * as TokenUtils from "@/Tokens/TokenUtils";
 import * as VSCodeUtils from "@/VSCodeUtils";
-import * as ProjectUtils from "@/Files/ProjectUtils";
-import * as BNFParser from "@/Files/BNFParser/BNFParser";
+import { Config, ConfigGrammar } from "@/Files/Config/Config";
+import { Project } from "@/Files/Project";
 
 export async function buildGrammar(project: Project): Promise<void> {
     await TerminalUtils.executeCommand(
@@ -27,19 +27,15 @@ export async function buildGrammar(project: Project): Promise<void> {
     );
 }
 
-export async function parseBNFFile(file: string) {
-    BNFParser.parseGrammarFile(file);
-}
-
 export async function createConfigFile(
     file: string
 ): Promise<Project | undefined> {
-    let selectedEntryPath: string =
+    const selectedEntryPath: string =
         file || (await VSCodeUtils.getSelectedExplorerFileSystemEntry());
 
     if (FileSystemEntryUtils.isFile(selectedEntryPath)) {
         window.showErrorMessage(
-            "Please select a directory to create the config file in."
+            Strings.pleaseSelectADirectoryToCreateTheConfigFileIn
         );
 
         return;
@@ -52,7 +48,7 @@ export async function createConfigFile(
     const mainGrammarPath: string | undefined =
         await InputUtils.promptForMainGrammarFile(grammarFiles);
 
-    if (!mainGrammarPath) {
+    if (mainGrammarPath === undefined) {
         return;
     }
 
@@ -70,26 +66,68 @@ export async function createConfigFile(
         return;
     }
 
-    const config: Config = {
-        $schema: Strings.configSchema,
-        mainGrammarPath: path.relative(selectedEntryPath, mainGrammarPath),
-        languageName: languageName,
-        fileExtensions: [languageFileExtension],
-        grammar: [],
-    };
-
     const configFilePath: string = path.join(
         selectedEntryPath,
         Strings.configFileName
     );
 
-    FileSystemEntryUtils.writeJsonFile(configFilePath, config);
+    const configFile: number = fs.openSync(configFilePath, "w");
+
+    const config: Config = {
+        $schema: Strings.configSchema,
+        mainGrammarPath: mainGrammarPath
+            ? path.relative(selectedEntryPath, mainGrammarPath)
+            : undefined,
+        languageName: languageName,
+        fileExtensions: [languageFileExtension],
+        grammar: mainGrammarPath
+            ? TokenUtils.tokensToConfigGrammar(
+                  await BNFParser.parseGrammarFile(mainGrammarPath)
+              )
+            : [],
+    };
+
+    FileSystemEntryUtils.writeJsonFile(configFile, config);
 
     const project: Project = ProjectUtils.create(configFilePath, config);
 
-    StorageUtils.addProject(project);
+    return ProjectUtils.updateProject(project);
+}
 
-    PackageUtils.updateContributesFromProject(project);
+export async function parseGrammarFile(
+    selectedProject: Project | undefined
+): Promise<Project | undefined> {
+    if (!selectedProject) {
+        window.showErrorMessage(
+            "Please enter into a project's directory to parse the main grammar file."
+        );
 
-    return project;
+        return undefined;
+    }
+
+    if (!selectedProject.mainGrammarPath) {
+        window.showErrorMessage(
+            "You need to specify a main grammar file in the config file to parse it."
+        );
+
+        return undefined;
+    }
+
+    const grammarPath: string | undefined = path.join(
+        path.dirname(selectedProject.configPath),
+        selectedProject.mainGrammarPath
+    );
+
+    const parsedConfigGrammar: ConfigGrammar[] =
+        TokenUtils.tokensToConfigGrammar(
+            await BNFParser.parseGrammarFile(grammarPath)
+        );
+
+    const { configPath, languageId, ...config } = selectedProject;
+
+    config.grammar = parsedConfigGrammar;
+
+    FileSystemEntryUtils.writeJsonFile(configPath, config);
+
+    return ProjectUtils.updateProject(selectedProject);
 }

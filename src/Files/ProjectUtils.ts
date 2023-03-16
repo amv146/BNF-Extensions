@@ -1,11 +1,8 @@
-import { window } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+import { window } from "vscode";
 
-import { Config } from "@/Files/Config/Config";
-import { Project } from "@/Files/Project";
-import * as ConsoleUtils from "@/ConsoleUtils";
 import * as ConfigUtils from "@/Files/Config/ConfigUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
@@ -13,6 +10,9 @@ import * as PathUtils from "@/Files/PathUtils";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TextmateUtils from "@/Textmate/TextmateUtils";
+import { Config } from "@/Files/Config/Config";
+import { Project } from "@/Files/Project";
+import { TextmateFile } from "@/Textmate/TextmateFile";
 
 export const enum DirectoryName {
     build = "build",
@@ -21,11 +21,15 @@ export const enum DirectoryName {
     test = "test",
 }
 
+export function configPathToLanguageId(configPath: string): string {
+    return getLanguageId(fs.statSync(configPath).ino);
+}
+
 export function create(configPath: string, config: Config): Project {
     return {
         ...config,
         configPath,
-        languageId: getLanguageId(fs.statSync(configPath).ino),
+        languageId: configPathToLanguageId(configPath),
     };
 }
 
@@ -41,29 +45,22 @@ export function findTopMostProjects(currentPath: string): Project[] {
         PathUtils.isPathInside(currentPath, path.dirname(project.configPath))
     );
 
-    return projects.sort((a, b) => {
-        const distance: number =
+    return projects.sort((leftProject, rightProject) => {
+        return (
             PathUtils.getDistanceBetweenPaths(
                 currentPath,
-                path.dirname(a.configPath)
+                path.dirname(leftProject.configPath)
             ) -
             PathUtils.getDistanceBetweenPaths(
                 currentPath,
-                path.dirname(b.configPath)
-            );
-
-        console.log(distance);
-
-        return distance;
+                path.dirname(rightProject.configPath)
+            )
+        );
     });
 }
 
 export function getBuildDirectory(project: Project): string {
     return path.join(getProjectDirectory(project), DirectoryName.build);
-}
-
-export function getGrammarDirectory(project: Project): string {
-    return path.join(getProjectDirectory(project), DirectoryName.grammar);
 }
 
 export function getGrammarPath(project: Project): string {
@@ -74,7 +71,7 @@ export function getGrammarPath(project: Project): string {
 }
 
 export function getLanguageId(inode: number): string {
-    return "" + (inode ?? "0");
+    return "" + inode;
 }
 
 export function getProjectDirectory(project: Project): string {
@@ -98,39 +95,45 @@ export async function readConfigIntoProject(
     }
 }
 
-export async function rewritePackageJson(project: Project): Promise<void> {
+export async function updateProject(
+    project: Project
+): Promise<Project | undefined> {
     const newProject: Project | undefined = await readConfigIntoProject(
         project.configPath
     );
 
     if (!newProject) {
-        return;
+        return undefined;
     }
 
-    PackageUtils.updateContributesFromProject(newProject);
+    StorageUtils.addProject(newProject);
+    updateProjectFiles(newProject);
 
-    const textmateGrammar: string = TextmateUtils.generateTextmateJson(
-        ConfigUtils.generateTokensFromConfigGrammar(newProject),
-        newProject.languageName,
-        newProject.languageId
+    return newProject;
+}
+
+export async function updateProjectFiles(project: Project): Promise<void> {
+    PackageUtils.updateContributesFromProjects([project]);
+
+    const textmateGrammar: TextmateFile = TextmateUtils.generateTextmate(
+        ConfigUtils.generateTokensFromConfigGrammar(project),
+        project.languageName,
+        project.languageId
     );
 
-    fs.writeFile(
-        PathUtils.getLanguageSyntaxPath(newProject.languageId),
-        textmateGrammar,
-        (err) => {
-            if (err) {
-                ConsoleUtils.log(err.message);
-            }
-        }
+    FileSystemEntryUtils.writeJsonFile(
+        PathUtils.getLanguageSyntaxPath(project.languageId),
+        textmateGrammar
     );
 
     return window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: "Updating project highlighting",
+            title: Strings.updatingProjectHighlighting,
             cancellable: false,
         },
-        async (progress, token) => {}
+        async () => {
+            return;
+        }
     );
 }

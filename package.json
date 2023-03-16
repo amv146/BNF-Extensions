@@ -16,24 +16,9 @@
     "contributes": {
         "grammars": [
             {
-                "language": "lc",
-                "scopeName": "source.lc",
-                "path": "languages/syntaxes/lc.tmLanguage.json"
-            },
-            {
-                "language": "199176507",
-                "path": "languages/syntaxes/199176507.tmLanguage.json",
-                "scopeName": "source.199176507"
-            },
-            {
-                "language": "178239946",
-                "path": "languages/syntaxes/178239946.tmLanguage.json",
-                "scopeName": "source.178239946"
-            },
-            {
-                "language": "195061797",
-                "path": "languages/syntaxes/195061797.tmLanguage.json",
-                "scopeName": "source.195061797"
+                "language": "199332766",
+                "path": "languages/syntaxes/199332766.tmLanguage.json",
+                "scopeName": "source.199332766"
             }
         ],
         "commands": [
@@ -43,11 +28,11 @@
             },
             {
                 "command": "bnf-extensions.createConfigFile",
-                "title": "Create Config File"
+                "title": "BNF Extensions: Create Config File in Current Directory"
             },
             {
-                "command": "bnf-extensions.parseBNFFile",
-                "title": "Parse BNF File"
+                "command": "bnf-extensions.parseGrammarFile",
+                "title": "BNF Extensions: Parse Current Project's Main Grammar File"
             }
         ],
         "menus": {
@@ -64,48 +49,17 @@
                     "when": "editorLangId == lbnf"
                 },
                 {
-                    "command": "bnf-extensions.parseBNFFile"
+                    "command": "bnf-extensions.parseGrammarFile"
                 }
             ]
         },
         "languages": [
             {
                 "aliases": [
-                    "Lambda Calculus",
-                    "lc"
+                    "Lambda Nat 4 2",
+                    "199332766"
                 ],
-                "configuration": "languages/configurations/lc.language-configuration.json",
-                "id": "lc",
-                "extensions": [
-                    ".lc"
-                ]
-            },
-            {
-                "aliases": [
-                    "Lambda Nat 5",
-                    "199176507"
-                ],
-                "id": "199176507",
-                "extensions": [
-                    ".lc5"
-                ]
-            },
-            {
-                "aliases": [
-                    "Lambda Nat 1",
-                    "178239946"
-                ],
-                "id": "178239946",
-                "extensions": [
-                    ".lc11"
-                ]
-            },
-            {
-                "aliases": [
-                    "Lambda nAt 4",
-                    "195061797"
-                ],
-                "id": "195061797",
+                "id": "199332766",
                 "extensions": [
                     ".lc4"
                 ]
@@ -113,37 +67,37 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
+        "vscode:prepublish": "npm run build",
         "compile": "tsc -p ./ && tspath -f",
+        "package": "npx vsce package",
+        "publish": "npx vsce publish",
         "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./out",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint",
+        "pretest": "npm run build && npm run lint",
         "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "test": "node ./out/test/runTest.js",
+        "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/amv146/BNFC-Extensions"
     },
     "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/glob": "^8.0.0",
-        "@types/mocha": "^10.0.0",
         "@types/node": "16.x",
         "@types/vscode": "^1.73.0",
         "@typescript-eslint/eslint-plugin": "^5.42.0",
         "@typescript-eslint/parser": "^5.42.0",
-        "@vscode/test-electron": "^2.2.0",
         "eslint": "^8.26.0",
-        "glob": "^8.0.3",
-        "mocha": "^10.1.0",
-        "tsconfig-paths": "^4.1.2",
+        "eslint-plugin-prettier": "^4.2.1",
+        "prettier": "^2.8.4",
         "tscpaths": "^0.0.9",
         "typescript": "^5.0.0-dev.20221210",
-        "vscode-uri": "^3.0.6",
         "xregexp": "^5.1.1"
     },
     "dependencies": {
         "app-root-path": "^3.1.0",
-        "tspath": "^2.6.8"
+        "tslint-config-prettier": "^1.18.0"
     }
 }

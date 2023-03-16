@@ -11,14 +11,14 @@ XRegExp.install({
     namespacing: true,
 });
 
-export function escapeRegex(string: String): string {
-    return string.replace(`[-[\]{}()*+?.,^$|#\s]`, "\\$&");
+export function escapeRegex(string: string): string {
+    return string.replace(/[-[\]{}()*+?.,^$|#\s]/g, "\\$&");
 }
 
 export function findAllMatches(
     regex: RegExp,
     text: string,
-    index: number = 0
+    index = 0
 ): ExecArray[] {
     const matches: ExecArray[] = [];
     let match: ExecArray | null;
@@ -29,6 +29,10 @@ export function findAllMatches(
     }
 
     return matches;
+}
+
+export function containsLetter(text: string): boolean {
+    return XRegExp.test(text, RegExps.containsLetterPattern);
 }
 
 export function splitWords(text: string): string[] {
