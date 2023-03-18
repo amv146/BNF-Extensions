@@ -1,17 +1,15 @@
+import { CommentToken, RegularToken, TokenType } from "./Token";
+
 import { ConfigGrammar } from "@/Files/Config/Config";
 import { TextmateScope } from "@/Textmate/TextmateScope";
-import { SemanticTokenType } from "@/Tokens/ParsedSemanticToken";
-import { CommentToken, RegularToken, Token, TokenType } from "@/Tokens/Token";
+import { SyntaxTokenType } from "@/Tokens/SyntaxToken";
+import { Token } from "@/Tokens/Token";
 
-export function tokenTypeToTextmateScope(tokenType: TokenType): TextmateScope {
+export function tokenTypeToTextmateScope(
+    tokenType: SyntaxTokenType
+): TextmateScope {
     return TextmateScope[tokenType];
 }
-
-// export function tokenTypeToSemanticTokenType(
-//     tokenType: TokenType
-// ): SemanticTokenType {
-//     return SemanticTokenType[tokenType];
-// }
 
 export function tokensToConfigGrammar(tokens: Token[]): ConfigGrammar[] {
     const tokensByType: Map<TokenType, Token[]> = new Map();
@@ -40,12 +38,4 @@ export function tokensToConfigGrammar(tokens: Token[]): ConfigGrammar[] {
             };
         }
     );
-}
-
-export function groupTokensByType(tokens: Token[]): Map<TokenType, Token[]> {
-    return tokens.reduce((currentTokensByType, token) => {
-        const tokensOfType = currentTokensByType.get(token.type) ?? [];
-
-        return currentTokensByType.set(token.type, [...tokensOfType, token]);
-    }, new Map<TokenType, Token[]>());
 }

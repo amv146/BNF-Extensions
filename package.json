@@ -14,13 +14,7 @@
     ],
     "main": "./out/Extension.js",
     "contributes": {
-        "grammars": [
-            {
-                "language": "199365597",
-                "path": "languages/syntaxes/199365597.tmLanguage.json",
-                "scopeName": "source.199365597"
-            }
-        ],
+        "grammars": [],
         "commands": [
             {
                 "command": "bnf-extensions.buildGrammar",
@@ -56,12 +50,12 @@
         "languages": [
             {
                 "aliases": [
-                    ".lc1",
-                    "199365597"
+                    "Lambda Nat 5",
+                    "199927765"
                 ],
-                "id": "199365597",
+                "id": "199927765",
                 "extensions": [
-                    ".lc1"
+                    ".lc5"
                 ]
             }
         ]

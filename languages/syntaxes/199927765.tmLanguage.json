@@ -1,0 +1,54 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Lambda Nat 5",
+    "patterns": [
+        {
+            "include": "#operator"
+        },
+        {
+            "include": "#keyword"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#comment"
+        }
+    ],
+    "repository": {
+        "operator": {
+            "patterns": [
+                {
+                    "name": "keyword.operator",
+                    "match": "\\\\|\\.|=|\\+|\\-|\\*|\\#|:"
+                }
+            ]
+        },
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(if|then|else|let|in)\\b"
+                }
+            ]
+        },
+        "function": {
+            "patterns": [
+                {
+                    "name": "entity.name.function",
+                    "match": "\\b(rec|hd|tl|less_equal)\\b"
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.199927765"
+}

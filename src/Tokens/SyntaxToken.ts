@@ -1,4 +1,4 @@
-export enum TokenType {
+export enum SyntaxTokenType {
     blockComment = "blockComment",
     character = "character",
     comment = "comment",
@@ -11,15 +11,15 @@ export enum TokenType {
     type = "type",
 }
 
-export interface CommentToken {
-    type: TokenType.blockComment;
+export interface SyntaxBlockCommentToken {
+    type: SyntaxTokenType.blockComment;
     begin: string;
     end: string;
 }
 
-export interface RegularToken {
-    type: Exclude<TokenType, TokenType.blockComment>;
+export interface SyntaxRegularToken {
+    type: Exclude<SyntaxTokenType, SyntaxTokenType.blockComment>;
     value: string;
 }
 
-export type Token = CommentToken | RegularToken;
+export type SyntaxToken = SyntaxBlockCommentToken | SyntaxRegularToken;

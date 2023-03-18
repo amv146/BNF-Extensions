@@ -6,10 +6,12 @@ import * as PackageUtils from "@/Files/Package/PackageUtils";
 import * as ProjectUtils from "@/Files/ProjectUtils";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
+import * as SemanticTokenUtils from "@/Tokens/SemanticTokenUtils";
 import { Project } from "@/Files/Project";
 
 let selectProjectStatusBarItem: vscode.StatusBarItem;
 let selectedProject: Project | undefined;
+let projects: Project[];
 export let storageManager: vscode.Memento;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -20,9 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
         100
     );
 
-    selectedProject = ProjectUtils.findTopMostProjects(
+    projects = ProjectUtils.findTopMostProjects(
         vscode.window.activeTextEditor?.document.fileName || ""
-    )[0];
+    );
+
+    selectedProject = projects[0];
 
     const createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
@@ -41,6 +45,16 @@ export function activate(context: vscode.ExtensionContext) {
             );
         }
     );
+
+    projects.forEach((project) => {
+        context.subscriptions.push(
+            vscode.languages.registerDocumentSemanticTokensProvider(
+                { language: project.languageId },
+                SemanticTokenUtils.getDocumentSemanticTokensProvider(project),
+                SemanticTokenUtils.getSemanticTokensLegend()
+            )
+        );
+    });
 
     context.subscriptions.push(createConfigFileDisposable);
     context.subscriptions.push(parseBNFFileDisposable);
