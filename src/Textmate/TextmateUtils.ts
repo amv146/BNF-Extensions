@@ -1,16 +1,16 @@
-import * as RegExps from "@/RegExps";
 import * as RegExpUtils from "@/RegExpUtils";
+import * as RegExps from "@/RegExps";
 import * as Strings from "@/Strings";
 import * as TokenUtils from "@/Tokens/TokenUtils";
+import { TextmateFile } from "@/Textmate/TextmateFile";
 import { TextmatePattern } from "@/Textmate/TextmatePattern";
+import { TextmateRepository } from "@/Textmate/TextmateRepository";
 import {
     BlockCommentToken,
     RegularToken,
     Token,
     TokenType,
 } from "@/Tokens/Token";
-import { TextmateRepository } from "@/Textmate/TextmateRepository";
-import { TextmateFile } from "@/Textmate/TextmateFile";
 
 export function generateTextmate(
     tokens: Token[],
@@ -116,9 +116,16 @@ function generatePattern(
             return generateBlockCommentPattern(tokens as BlockCommentToken[]);
         case TokenType.comment:
             return generateLineCommentPattern(tokens as RegularToken[]);
+        case TokenType.constant:
+        case TokenType.function:
+        case TokenType.keyword:
+        case TokenType.type:
+            return generateBasicPattern(tokens as RegularToken[], tokenType);
         case TokenType.number:
             return generateNumberPattern();
         case TokenType.operator:
+        case TokenType.separator:
+        case TokenType.terminator:
             return generateBasicPattern(
                 tokens as RegularToken[],
                 tokenType,
@@ -128,8 +135,6 @@ function generatePattern(
             return generateStringPattern();
         case TokenType.character:
             return generateCharacterPattern();
-        default:
-            return generateBasicPattern(tokens as RegularToken[], tokenType);
     }
 }
 

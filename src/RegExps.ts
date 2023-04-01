@@ -19,6 +19,14 @@ export const bnfTokenPattern: RegExp = XRegExp(
     /\s*(?:(?<name>[^\s,]*)=(?<type>[^\s,]*))/g.source,
     "x"
 );
+export const bnfTerminatorPattern: RegExp = XRegExp(
+    /terminator\s+(?<category>\S+)\s+(?:"(?<terminator>\S+)")\s*;/g.source,
+    "x"
+);
+export const bnfSeparatorPattern: RegExp = XRegExp(
+    /separator\s+(?<category>\S+)\s+(?:"(?<separator>\S+)")\s*;/g.source,
+    "x"
+);
 export const characterPattern: RegExp = XRegExp(
     /(?<character>(?:'(?:[^']|')*')|(?:`(?:[^`]|`)*`))/g.source,
     "x"
@@ -33,5 +41,6 @@ export const splitWordsPattern: RegExp = XRegExp(
     "x"
 );
 export const stringPattern: RegExp = XRegExp(
-    /(?<string>(?:"(?:[^"]|")*"))/g.source, "x"
+    /(?<string>(?:"(?:[^"]|")*"))/g.source,
+    "x"
 );

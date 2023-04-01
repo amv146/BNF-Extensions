@@ -27,6 +27,14 @@
                 "highlightNumbers": {
                     "description": "Whether or not to highlight numbers.",
                     "type": "boolean"
+                },
+                "highlightStrings": {
+                    "description": "Whether or not to highlight strings.",
+                    "type": "boolean"
+                },
+                "highlightCharacters": {
+                    "description": "Whether or not to highlight characters.",
+                    "type": "boolean"
                 }
             }
         },
@@ -42,16 +50,23 @@
                             "blockComment",
                             "comment",
                             "constant",
+                            "function",
                             "keyword",
                             "operator",
-                            "function"
+                            "terminator",
+                            "separator"
                         ]
                     }
                 },
                 "if": {
+                    "required": [
+                        "type"
+                    ],
                     "properties": {
                         "type": {
-                            "const": "blockComment"
+                            "enum": [
+                                "blockComment"
+                            ]
                         }
                     }
                 },
@@ -70,14 +85,26 @@
                     }
                 },
                 "else": {
-                    "required": [
-                        "values"
-                    ],
-                    "properties": {
-                        "values": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
+                    "if": {
+                        "not": {
+                            "required": [
+                                "type"
+                            ]
+                        }
+                    },
+                    "then": {
+                        "required": []
+                    },
+                    "else": {
+                        "required": [
+                            "values"
+                        ],
+                        "properties": {
+                            "values": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         }
                     }

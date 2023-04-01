@@ -116,5 +116,38 @@ function parseLine(line: string): Token[] {
         ];
     }
 
+    const terminatorMatch: ExecArray | null = XRegExp.exec(
+        line,
+        RegExps.bnfTerminatorPattern
+    );
+
+    if (terminatorMatch) {
+        const terminatorGroup: string =
+            terminatorMatch.groups?.terminator ?? "";
+
+        return [
+            {
+                type: TokenType.terminator,
+                value: terminatorGroup,
+            },
+        ];
+    }
+
+    const separatorMatch: ExecArray | null = XRegExp.exec(
+        line,
+        RegExps.bnfSeparatorPattern
+    );
+
+    if (separatorMatch) {
+        const separatorGroup: string = separatorMatch.groups?.separator ?? "";
+
+        return [
+            {
+                type: TokenType.separator,
+                value: separatorGroup,
+            },
+        ];
+    }
+
     return [];
 }
