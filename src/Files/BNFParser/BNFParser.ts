@@ -8,7 +8,7 @@ import * as EnumUtils from "@/EnumUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import * as RegExpUtils from "@/RegExpUtils";
 import * as RegExps from "@/RegExps";
-import { RegularToken, Token, TokenType } from "@/Tokens/Token";
+import { BlockCommentToken, RegularToken, Token, TokenType } from "@/Tokens/Token";
 
 import XRegExp = require("xregexp");
 
@@ -25,6 +25,12 @@ export async function parseGrammarFile(grammarPath: string): Promise<Token[]> {
     tokens.forEach((token) => {
         if (token.type !== TokenType.blockComment) {
             tokensByValue.set((token as RegularToken).value, token);
+        }
+        else {
+            tokensByValue.set(
+                (token as BlockCommentToken).begin + (token as BlockCommentToken).end,
+                token
+            );
         }
     });
 

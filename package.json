@@ -1,11 +1,12 @@
 {
     "name": "bnf-extensions",
-    "displayName": "bnf-extensions",
+    "displayName": "BNF Extensions",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.73.0"
     },
+    "icon": "logo.png",
     "categories": [
         "Other"
     ],
@@ -16,9 +17,9 @@
     "contributes": {
         "grammars": [
             {
-                "language": "205120596",
-                "path": "languages/syntaxes/205120596.tmLanguage.json",
-                "scopeName": "source.205120596"
+                "language": "205135039",
+                "path": "languages/syntaxes/205135039.tmLanguage.json",
+                "scopeName": "source.205135039"
             }
         ],
         "commands": [
@@ -57,17 +58,21 @@
             {
                 "aliases": [
                     "C--",
-                    "205120596"
+                    "205135039"
                 ],
-                "id": "205120596",
+                "id": "205135039",
                 "extensions": [
                     ".cmm"
                 ]
             }
         ]
     },
+    "publisher": "alexvallone",
     "scripts": {
-        "vscode:prepublish": "npm run build",
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./src/Extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
         "compile": "tsc -p ./ && tspath -f",
         "package": "npx vsce package",
         "publish": "npx vsce publish",
@@ -89,6 +94,7 @@
         "@types/vscode": "^1.73.0",
         "@typescript-eslint/eslint-plugin": "^5.42.0",
         "@typescript-eslint/parser": "^5.42.0",
+        "esbuild": "^0.17.14",
         "eslint": "^8.26.0",
         "eslint-plugin-prettier": "^4.2.1",
         "prettier": "^2.8.4",

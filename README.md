@@ -45,14 +45,26 @@ used to generate the TextMate grammar file and the syntax highlighting. It is a 
 that contain the following information:
 
 - `type`: The type of the grammar. This can be one of the following:
-  - `blockComment`: A block (or multiline) comment in the language. Rather than having a `values` property, this type has a `start` and `end` property. The `start` property is the text that starts the block comment and the `end` property is the text that ends the block comment.
+  - `blockComment`: A block (or multiline) comment in the language. Rather than having a `values` property, this type has a `begin` and `end` property. The `begin` property is the text that starts the block comment and the `end` property is the text that ends the block comment.
   - `comment`: A single line comment in the language.
   - `constant`: A constant in the language. Examples include `true`, `false`, `null`, etc.
   - `function`: A built-in function in the language. Examples include `print`, `println`, etc.
   - `keyword`: A keyword in the language. Examples include `if`, `else`, `while`, etc.
   - `operator`: An operator in the language. Examples include `+`, `-`, `*`, etc.
-  - `type`: A type in the language. Examples include `int`, `float`, `string`, etc.
   - `separator`: A separator in the language, used to separate multiple values but is not applied at the end of the last one. The most common example of this is a comma.
+  - `type`: A type in the language. Examples include `int`, `float`, `string`, etc.
   - `terminator`: A terminator in the language. This is typically used to terminate a statement and is applied at the end of every statement. The most common example of this is a semicolon.
 - `values`: A list of strings that represent the text that will be highlighted according to the type.
 
+## Known Issues
+1. Two languages being created with the same name will cause unexpected behavior when trying to select the language to use for a file extension.
+2. There is not full support for moving config files from place to place. Moving a config file may or may not preserve the project.
+3. It is necessary to restart VSCode after updating the config file for the changes to take effect. There is currently no foreseeable way to get around this.
+
+## Future Work
+1. Support for more grammar types. Additionally add support for higher type specificity (such as differentiating between types of keywords).
+2. Support for choosing colors for grammar types. This may or may not be possible, but there may be a way to do it through VSCode's `settings.json` file.
+3. Full support for moving config files from place to place.
+4. More advanced default grammar creation from grammar files. This can possibly be used to infer grammar types from more than just the name of the values and type of rule.
+5. Language configuration generation. This will allow for things like auto-closing brackets, auto-indentation, etc. This will most likely be the next big priority.
+6. Semantic highlighting for highlighting things like variables, functions, etc. This may or may not be possible and is a stretch goal.
