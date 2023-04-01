@@ -24,6 +24,9 @@
             "include": "#comment"
         },
         {
+            "include": "#number"
+        },
+        {
             "include": "#string"
         }
     ],
@@ -83,6 +86,14 @@
                     "begin": "//",
                     "end": "$",
                     "name": "comment.line.character"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "((?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\\d+\\.\\d+)|(?:\\d+))",
+                    "name": "constant.numeric"
                 }
             ]
         },

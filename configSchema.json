@@ -13,18 +13,22 @@
                 },
                 "fileExtensions": {
                     "type": "array",
+                    "description": "The file extensions that will be associated with this language.",
                     "items": {
                         "type": "string"
                     }
                 },
                 "mainGrammarPath": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The relative path to the main grammar file. This file will be used to generate default syntax highlighting rules."
                 },
                 "options": {
+                    "description": "Extra syntax highlighting options",
                     "$ref": "#/definitions/ConfigOptions"
                 },
                 "grammar": {
                     "type": "array",
+                    "description": "The syntax highlighting rules for the language. These rules will be used to generate the syntax highlighting rules for the language.",
                     "items": {
                         "$ref": "#/definitions/ConfigGrammar"
                     }
@@ -41,12 +45,15 @@
             "type": "object",
             "properties": {
                 "highlightNumbers": {
+                    "description": "Whether or not to highlight numbers.",
                     "type": "boolean"
                 },
                 "highlightStrings": {
+                    "description": "Whether or not to highlight strings.",
                     "type": "boolean"
                 },
                 "highlightCharacters": {
+                    "description": "Whether or not to highlight characters.",
                     "type": "boolean"
                 }
             },
@@ -67,7 +74,8 @@
             "properties": {
                 "type": {
                     "type": "string",
-                    "const": "blockComment"
+                    "const": "blockComment",
+                    "description": "A block (or multiline) comment in the language. Rather than having a values property, this type has a start and end property. The start property is the text that starts the block comment and the end property is the text that ends the block comment."
                 },
                 "begin": {
                     "type": "string"
@@ -89,17 +97,48 @@
                 "type": {
                     "type": "string",
                     "enum": [
-                        "character",
                         "comment",
                         "constant",
                         "function",
                         "keyword",
-                        "number",
                         "operator",
                         "separator",
-                        "string",
                         "terminator",
                         "type"
+                    ],
+                    "oneOf": [
+                        {
+                            "const": "comment",
+                            "description": "A single line comment in the language."
+                        },
+                        {
+                            "const": "constant",
+                            "description": "A constant in the language. Examples include true, false, null, etc."
+                        },
+                        {
+                            "const": "function",
+                            "description": "A built-in function in the language. Examples include print, println, etc."
+                        },
+                        {
+                            "const": "keyword",
+                            "description": "A keyword in the language. Examples include if, else, while, etc."
+                        },
+                        {
+                            "const": "operator",
+                            "description": "An operator in the language. Examples include +, -, *, etc."
+                        },
+                        {
+                            "const": "separator",
+                            "description": "A separator in the language, used to separate multiple values but is not applied at the end of the last one. The most common example of this is a comma."
+                        },
+                        {
+                            "const": "terminator",
+                            "description": "A terminator in the language. This is typically used to terminate a statement and is applied at the end of every statement. The most common example of this is a semicolon."
+                        },
+                        {
+                            "const": "type",
+                            "description": "A type in the language. Examples include int, float, string, etc."
+                        }
                     ]
                 },
                 "values": {
