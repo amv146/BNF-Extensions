@@ -9,6 +9,7 @@
                     "type": "string"
                 },
                 "languageName": {
+                    "description": "The name of the language. This will be used to display the language in the language selection menu.",
                     "type": "string"
                 },
                 "fileExtensions": {
