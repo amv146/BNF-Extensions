@@ -24,7 +24,7 @@ as a good starting point for creating syntax highlighting for any language.
 
 6. After updating the grammar in the config file and saving it, restart VSCode. If when you restart, an error pops up in the bottom right saying that "Extensions have been modified on disk", and prompts you to reload - click reload window.
 
-### Config File
+## Config File
 
 The config file is a JSON file that contains the base information for the project. It contains the
 following information:
@@ -38,7 +38,7 @@ following information:
   - `highlightNumbers`: A boolean value that determines whether or not numbers should be highlighted. Defaults to `false`.
   - `highlightStrings`: A boolean value that determines whether or not strings (within double quotes) should be highlighted. Defaults to `false`.
 
-### Grammar
+## Grammar
 
 The grammar is the most important part of the config file. It contains the information that will be
 used to generate the TextMate grammar file and the syntax highlighting. It is a list of objects
@@ -55,6 +55,35 @@ that contain the following information:
   - `type`: A type in the language. Examples include `int`, `float`, `string`, etc.
   - `terminator`: A terminator in the language. This is typically used to terminate a statement and is applied at the end of every statement. The most common example of this is a semicolon.
 - `values`: A list of strings that represent the text that will be highlighted according to the type.
+
+## Default Grammar Syntax Highlighting
+Using a BNFC grammar file, the extension will automatically create a default grammar from the grammar file chosen when creating the config file. This default grammar is created through pre-defined rules that are based on the type of rule in the grammar file. The extension tries to match different patterns for rule inside the file, and infers grammar types based on the name of the values and the type of rule. There are currently four types of rules that are supported:
+
+1. `Declarations`: These are statements used to define the types of values that can be used in the language. They are defined as follows:
+    ```
+    Identifier "." Identifier "::=" (Identifier | String)* ";"
+    ```
+    Currently, `Identifiers` are parsed but not used (although serve as the basis of how semantic highlighting might be implemented in the future). `Strings` are used to define the values that will be highlighted. They are constant throughout the language, and a predefined mapping is currently used to map them to the appropriate grammar type. The list of predefined mappings can be found [here](docs/predefinedTypes.md).
+2. `Comments`: Rules that define comments in the language. They are defined as follows:
+    ```c
+    // For single line comments
+    comment String ;
+
+    // For block comments
+    comment String String ;
+    ```
+    In a single line comment, `String` is the text that starts the comment. In a block comment, the first `String` is the text that starts the comment and the second `String` is the text that ends the comment.
+3. `Terminators`: Rules that define terminators in the language. They are defined as follows:
+    ```
+    terminator Identifier String ;
+    ```
+    `String` is the text that will be highlighted as a terminator.
+4. `Separators`: Rules that define separators in the language. They are defined as follows:
+    ```
+    separator Identifier String ;
+    ```
+    `String` is the text that will be highlighted as a separator.
+
 
 ## Known Issues
 1. Two languages being created with the same name will cause unexpected behavior when trying to select the language to use for a file extension.
