@@ -16,9 +16,9 @@
     "contributes": {
         "grammars": [
             {
-                "language": "199365597",
-                "path": "languages/syntaxes/199365597.tmLanguage.json",
-                "scopeName": "source.199365597"
+                "language": "205120596",
+                "path": "languages/syntaxes/205120596.tmLanguage.json",
+                "scopeName": "source.205120596"
             }
         ],
         "commands": [
@@ -56,12 +56,12 @@
         "languages": [
             {
                 "aliases": [
-                    ".lc1",
-                    "199365597"
+                    "C--",
+                    "205120596"
                 ],
-                "id": "199365597",
+                "id": "205120596",
                 "extensions": [
-                    ".lc1"
+                    ".cmm"
                 ]
             }
         ]

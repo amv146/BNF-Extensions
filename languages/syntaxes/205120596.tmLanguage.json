@@ -1,0 +1,99 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "C--",
+    "patterns": [
+        {
+            "include": "#terminator"
+        },
+        {
+            "include": "#blockComment"
+        },
+        {
+            "include": "#separator"
+        },
+        {
+            "include": "#operator"
+        },
+        {
+            "include": "#keyword"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#string"
+        }
+    ],
+    "repository": {
+        "terminator": {
+            "patterns": [
+                {
+                    "name": "punctuation.terminator",
+                    "match": ";"
+                }
+            ]
+        },
+        "blockComment": {
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block"
+                }
+            ]
+        },
+        "separator": {
+            "patterns": [
+                {
+                    "name": "punctuation.separator",
+                    "match": "\\,"
+                }
+            ]
+        },
+        "operator": {
+            "patterns": [
+                {
+                    "name": "keyword.operator",
+                    "match": "\\\\|\\.|=|\\(|\\)|\\{|\\}|\\+|\\-|\\*|\\#|:"
+                }
+            ]
+        },
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(if|then|else|let|in|function|rec)\\b"
+                }
+            ]
+        },
+        "function": {
+            "patterns": [
+                {
+                    "name": "entity.name.function",
+                    "match": "\\b(hd|tl|less_equal)\\b"
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        },
+        "string": {
+            "patterns": [
+                {
+                    "match": "((?:\"(?:[^\"]|\")*\"))",
+                    "name": "string.quoted"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.205120596"
+}
