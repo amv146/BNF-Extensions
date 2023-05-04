@@ -45,6 +45,10 @@
         "ConfigOptions": {
             "type": "object",
             "properties": {
+                "createLanguageConfigurationFile": {
+                    "description": "Whether or not to create a language configuration file. This file will be used to specify helpful information about the language, such as comments, brackets, auto closing pairs, etc.",
+                    "type": "boolean"
+                },
                 "highlightNumbers": {
                     "description": "Whether or not to highlight numbers.",
                     "type": "boolean"

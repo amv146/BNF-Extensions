@@ -15,6 +15,7 @@ export type ConfigGrammarEntry = {
 export type ConfigGrammar = ConfigBlockComment | ConfigGrammarEntry;
 
 export interface ConfigOptions {
+    createLanguageConfigurationFile?: boolean;
     highlightNumbers?: boolean;
     highlightStrings?: boolean;
     highlightCharacters?: boolean;

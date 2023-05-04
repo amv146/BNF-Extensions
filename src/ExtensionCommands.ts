@@ -80,6 +80,9 @@ export async function createConfigFile(
             : undefined,
         languageName: languageName,
         fileExtensions: [languageFileExtension],
+        options: {
+            createLanguageConfigurationFile: true,
+        },
         grammar: mainGrammarPath
             ? TokenUtils.tokensToConfigGrammar(
                   await BNFParser.parseGrammarFile(mainGrammarPath)

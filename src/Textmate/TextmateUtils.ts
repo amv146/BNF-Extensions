@@ -124,6 +124,7 @@ function generatePattern(
         case TokenType.number:
             return generateNumberPattern();
         case TokenType.operator:
+        case TokenType.punctuation:
         case TokenType.separator:
         case TokenType.terminator:
             return generateBasicPattern(

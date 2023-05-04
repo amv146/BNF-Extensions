@@ -1,0 +1,99 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "cmm",
+    "patterns": [
+        {
+            "include": "#terminator"
+        },
+        {
+            "include": "#separator"
+        },
+        {
+            "include": "#operator"
+        },
+        {
+            "include": "#keyword"
+        },
+        {
+            "include": "#function"
+        },
+        {
+            "include": "#punctuation"
+        },
+        {
+            "include": "#comment"
+        },
+        {
+            "include": "#blockComment"
+        }
+    ],
+    "repository": {
+        "terminator": {
+            "patterns": [
+                {
+                    "name": "punctuation.terminator",
+                    "match": ";"
+                }
+            ]
+        },
+        "separator": {
+            "patterns": [
+                {
+                    "name": "punctuation.separator",
+                    "match": "\\,"
+                }
+            ]
+        },
+        "operator": {
+            "patterns": [
+                {
+                    "name": "keyword.operator",
+                    "match": "\\\\|\\.|=|\\+|\\-|\\*|\\#|:"
+                }
+            ]
+        },
+        "keyword": {
+            "patterns": [
+                {
+                    "name": "keyword.control",
+                    "match": "\\b(if|then|else|let|in|function)\\b"
+                }
+            ]
+        },
+        "function": {
+            "patterns": [
+                {
+                    "name": "entity.name.function",
+                    "match": "\\b(rec|hd|tl|less_equal)\\b"
+                }
+            ]
+        },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.definition",
+                    "match": "\\(|\\)|\\{|\\}"
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "begin": "//",
+                    "end": "$",
+                    "name": "comment.line.character"
+                }
+            ]
+        },
+        "blockComment": {
+            "patterns": [
+                {
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block"
+                }
+            ]
+        }
+    },
+    "scopeName": "source.210432131"
+}

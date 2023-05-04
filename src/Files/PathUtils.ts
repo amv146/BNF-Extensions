@@ -74,11 +74,22 @@ export function getDistanceBetweenPaths(path1: string, path2: string): number {
     );
 }
 
+export const getLanguageConfigurationPath = (
+    languageId: string,
+    relative: boolean = false
+): string =>
+    path.join(
+        relative
+            ? Paths.relativeLanguageConfigurationsPath
+            : Paths.absoluteLanguageConfigurationsPath,
+        languageId + Strings.languageConfigurationFileExtension
+    );
+
 export const getLanguageSyntaxPath = (
     languageId: string,
     relative: boolean = false
 ): string =>
     path.join(
         relative ? Paths.relativeSyntaxesPath : Paths.absoluteSyntaxesPath,
-        languageId + Strings.textmateGrammarFileExtension
+        languageId + Strings.languageSyntaxFileExtension
     );

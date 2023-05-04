@@ -5,14 +5,17 @@ import { window } from "vscode";
 
 import * as ConfigUtils from "@/Files/Config/ConfigUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
+import * as LanguageConfigurationUtils from "@/Files/LanguageConfigurationUtils";
 import * as PackageUtils from "@/Files/Package/PackageUtils";
 import * as PathUtils from "@/Files/PathUtils";
 import * as StorageUtils from "@/Storage/StorageUtils";
 import * as Strings from "@/Strings";
 import * as TextmateUtils from "@/Textmate/TextmateUtils";
 import { Config } from "@/Files/Config/Config";
+import { LanguageConfigurationFile } from "@/Files/LanguageConfigurationFile";
 import { Project } from "@/Files/Project";
 import { TextmateFile } from "@/Textmate/TextmateFile";
+import { Token } from "@/Tokens/Token";
 
 export const enum DirectoryName {
     build = "build",
@@ -115,8 +118,11 @@ export async function updateProject(
 export async function updateProjectFiles(project: Project): Promise<void> {
     PackageUtils.updateContributesFromProjects([project]);
 
+    const tokens: Token[] =
+        ConfigUtils.generateTokensFromConfigGrammar(project);
+
     const textmateFile: TextmateFile = TextmateUtils.generateTextmate(
-        ConfigUtils.generateTokensFromConfigGrammar(project),
+        tokens,
         project.languageName,
         project.languageId
     );
@@ -125,6 +131,25 @@ export async function updateProjectFiles(project: Project): Promise<void> {
         PathUtils.getLanguageSyntaxPath(project.languageId),
         textmateFile
     );
+
+    const createLanguageConfigurationFile: boolean =
+        project.options?.createLanguageConfigurationFile ?? false;
+
+    if (createLanguageConfigurationFile) {
+        const languageConfigurationFile: LanguageConfigurationFile =
+            LanguageConfigurationUtils.generateLanguageConfigurationFile(
+                tokens
+            );
+
+        FileSystemEntryUtils.writeJsonFile(
+            PathUtils.getLanguageConfigurationPath(project.languageId),
+            languageConfigurationFile
+        );
+    } else {
+        FileSystemEntryUtils.deleteFile(
+            PathUtils.getLanguageConfigurationPath(project.languageId)
+        );
+    }
 
     return window.withProgress(
         {

@@ -6,9 +6,6 @@
             "include": "#terminator"
         },
         {
-            "include": "#blockComment"
-        },
-        {
             "include": "#separator"
         },
         {
@@ -21,13 +18,13 @@
             "include": "#function"
         },
         {
+            "include": "#punctuation"
+        },
+        {
             "include": "#comment"
         },
         {
-            "include": "#number"
-        },
-        {
-            "include": "#string"
+            "include": "#blockComment"
         }
     ],
     "repository": {
@@ -36,15 +33,6 @@
                 {
                     "name": "punctuation.terminator",
                     "match": ";"
-                }
-            ]
-        },
-        "blockComment": {
-            "patterns": [
-                {
-                    "begin": "/\\*",
-                    "end": "\\*/",
-                    "name": "comment.block"
                 }
             ]
         },
@@ -60,7 +48,7 @@
             "patterns": [
                 {
                     "name": "keyword.operator",
-                    "match": "\\\\|\\.|=|\\(|\\)|\\{|\\}|\\+|\\-|\\*|\\#|:"
+                    "match": "\\\\|\\.|=|\\+|\\-|\\*|\\#|:"
                 }
             ]
         },
@@ -80,6 +68,14 @@
                 }
             ]
         },
+        "punctuation": {
+            "patterns": [
+                {
+                    "name": "punctuation.definition",
+                    "match": "\\(|\\)|\\{|\\}|\\[|\\]"
+                }
+            ]
+        },
         "comment": {
             "patterns": [
                 {
@@ -89,22 +85,15 @@
                 }
             ]
         },
-        "number": {
+        "blockComment": {
             "patterns": [
                 {
-                    "match": "((?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\\d+\\.\\d+)|(?:\\d+))",
-                    "name": "constant.numeric"
-                }
-            ]
-        },
-        "string": {
-            "patterns": [
-                {
-                    "match": "((?:\"(?:[^\"]|\")*\"))",
-                    "name": "string.quoted"
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "name": "comment.block"
                 }
             ]
         }
     },
-    "scopeName": "source.205120596"
+    "scopeName": "source.210443106"
 }

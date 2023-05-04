@@ -8,6 +8,7 @@ export enum TextmateScope {
     keyword = "keyword.control",
     number = "constant.numeric",
     operator = "keyword.operator",
+    punctuation = "punctuation.definition",
     separator = "punctuation.separator",
     string = "string.quoted",
     terminator = "punctuation.terminator",

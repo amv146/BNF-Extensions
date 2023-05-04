@@ -72,6 +72,16 @@ export enum PredefinedTokenValues {
     while = "while",
     with = "with",
     yield = "yield",
+    "{" = "{",
+    "}" = "}",
+    "(" = "(",
+    ")" = ")",
+    "[" = "[",
+    "]" = "]",
+    "<" = "<",
+    ">" = ">",
+    '"' = '"',
+    "'" = "'",
 }
 
 export const tokenTypeByPredefinedTokenValue: Record<
@@ -149,4 +159,14 @@ export const tokenTypeByPredefinedTokenValue: Record<
     [PredefinedTokenValues.while]: TokenType.keyword,
     [PredefinedTokenValues.with]: TokenType.keyword,
     [PredefinedTokenValues.yield]: TokenType.keyword,
+    [PredefinedTokenValues["{"]]: TokenType.punctuation,
+    [PredefinedTokenValues["}"]]: TokenType.punctuation,
+    [PredefinedTokenValues["("]]: TokenType.punctuation,
+    [PredefinedTokenValues[")"]]: TokenType.punctuation,
+    [PredefinedTokenValues["["]]: TokenType.punctuation,
+    [PredefinedTokenValues["]"]]: TokenType.punctuation,
+    [PredefinedTokenValues["<"]]: TokenType.punctuation,
+    [PredefinedTokenValues[">"]]: TokenType.punctuation,
+    [PredefinedTokenValues['"']]: TokenType.punctuation,
+    [PredefinedTokenValues["'"]]: TokenType.punctuation,
 };

@@ -1,10 +1,10 @@
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
-import { GrammarContribute } from "@/Files/Package/GrammarContribute";
-import { LanguageContribute } from "@/Files/Package/LanguageContribute";
 import * as PathUtils from "@/Files/PathUtils";
 import * as Paths from "@/Files/Paths";
-import { Project } from "@/Files/Project";
 import * as Strings from "@/Strings";
+import { GrammarContribute } from "@/Files/Package/GrammarContribute";
+import { LanguageContribute } from "@/Files/Package/LanguageContribute";
+import { Project } from "@/Files/Project";
 
 const packageJson = require(Paths.packageJsonPath);
 
@@ -52,8 +52,9 @@ function createLanguageContributeFromProject(
 
     return {
         aliases: [project.languageName, languageId],
-        id: languageId,
         extensions: project.fileExtensions,
+        id: languageId,
+        configuration: PathUtils.getLanguageConfigurationPath(languageId, true),
     };
 }
 

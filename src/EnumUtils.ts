@@ -6,3 +6,7 @@ export function fromStringValue<T>(
         ? (value as unknown as T)
         : undefined;
 }
+
+export function containsKey<T>(enm: { [s: string]: T }, key: string): boolean {
+    return Object.keys(enm).includes(key);
+}

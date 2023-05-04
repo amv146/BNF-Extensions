@@ -17,9 +17,9 @@
     "contributes": {
         "grammars": [
             {
-                "language": "205135039",
-                "path": "languages/syntaxes/205135039.tmLanguage.json",
-                "scopeName": "source.205135039"
+                "language": "210443106",
+                "path": "languages/syntaxes/210443106.tmLanguage.json",
+                "scopeName": "source.210443106"
             }
         ],
         "commands": [
@@ -58,34 +58,38 @@
             {
                 "aliases": [
                     "C--",
-                    "205135039"
+                    "210443106"
                 ],
-                "id": "205135039",
                 "extensions": [
                     ".cmm"
-                ]
+                ],
+                "id": "210443106",
+                "configuration": "languages/configurations/210443106.language-configuration.json"
             }
         ]
     },
     "publisher": "alexvallone",
     "scripts": {
-        "vscode:prepublish": "npm run esbuild-base -- --minify",
         "esbuild-base": "esbuild ./src/Extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run esbuild-base -- --sourcemap",
         "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
         "compile": "tsc -p ./ && tspath -f",
-        "package": "npx vsce package",
         "publish": "npx vsce publish",
         "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./out",
         "watch": "tsc -watch -p ./",
         "pretest": "npm run build && npm run lint",
         "lint": "eslint src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}"
+        "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
+        "vscode:prepublish": "npm run package",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "test-compile": "tsc -p ./"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/amv146/BNFC-Extensions"
+        "url": "https://github.coNFm/amv146/BC-Extensions"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.1.1",
@@ -98,8 +102,11 @@
         "eslint": "^8.26.0",
         "eslint-plugin-prettier": "^4.2.1",
         "prettier": "^2.8.4",
+        "ts-loader": "^9.4.2",
         "tscpaths": "^0.0.9",
         "typescript": "^5.0.0-dev.20221210",
+        "webpack": "^5.82.0",
+        "webpack-cli": "^5.0.2",
         "xregexp": "^5.1.1"
     },
     "dependencies": {

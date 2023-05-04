@@ -7,6 +7,7 @@ export enum TokenType {
     keyword = "keyword",
     number = "number",
     operator = "operator",
+    punctuation = "punctuation",
     separator = "separator",
     string = "string",
     terminator = "terminator",

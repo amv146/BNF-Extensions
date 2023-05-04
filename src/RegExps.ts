@@ -32,6 +32,11 @@ export const characterPattern: RegExp = XRegExp(
     "x"
 );
 export const containsLetterPattern: RegExp = XRegExp(/[a-zA-Z]/g.source, "x");
+export const increaseIndentPattern: RegExp = XRegExp(
+    /^((?!\/\/).)*(\{[^}"'`]*|\([^)"'`]*|\[[^\]"'`]*)$/g.source,
+    "x"
+);
+
 export const numberPattern: RegExp = XRegExp(
     /(?<number>(?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\d+\.\d+)|(?:\d+))/g.source,
     "x"
