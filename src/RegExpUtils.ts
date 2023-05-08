@@ -11,8 +11,46 @@ XRegExp.install({
     namespacing: true,
 });
 
+export function containsLetter(text: string): boolean {
+    return XRegExp.test(text, RegExps.containsLetterPattern);
+}
+
 export function escapeRegex(string: string): string {
     return string.replace(/[-[\]{}()*+?.,^$|#\s]/g, "\\$&");
+}
+
+export function createIncreaseIndentRegex(
+    lineComment: string,
+    brackets: [string, string][]
+): RegExp {
+    return XRegExp(
+        `^((?!${escapeRegex(lineComment)}).)*(${brackets
+            .map((bracket) => {
+                if (bracket[0] === "[") {
+                    return `\\${bracket}[^]"'\\\`]*`;
+                }
+
+                return `${escapeRegex(bracket[0])}[^${escapeRegex(
+                    bracket[1]
+                )}"'\\\`]*`;
+            })
+            .join("|")})$`,
+        "gs"
+    );
+}
+
+export function createStringRegex(values: string[]): RegExp {
+    return XRegExp(
+        values
+            .map(
+                (value) =>
+                    `(${escapeRegex(value)}([^${escapeRegex(
+                        value
+                    )}\\]|\\[\s\S])*${escapeRegex(value)})`
+            )
+            .join("|"),
+        "gs"
+    );
 }
 
 export function findAllMatches(
@@ -29,10 +67,6 @@ export function findAllMatches(
     }
 
     return matches;
-}
-
-export function containsLetter(text: string): boolean {
-    return XRegExp.test(text, RegExps.containsLetterPattern);
 }
 
 export function splitWords(text: string): string[] {

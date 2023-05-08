@@ -107,6 +107,7 @@
                         "function",
                         "keyword",
                         "operator",
+                        "punctuation",
                         "separator",
                         "terminator",
                         "type"
@@ -133,8 +134,16 @@
                             "description": "An operator in the language. Examples include +, -, *, etc."
                         },
                         {
+                            "const": "punctuation",
+                            "description": "A punctuation mark in the language. Examples include (, ), {, }, etc."
+                        },
+                        {
                             "const": "separator",
                             "description": "A separator in the language, used to separate multiple values but is not applied at the end of the last one. The most common example of this is a comma."
+                        },
+                        {
+                            "const": "string",
+                            "description": "A string in the language. This is typically used to surround text and is applied at the beginning and end of every string. The most common example of this is double quotes."
                         },
                         {
                             "const": "terminator",

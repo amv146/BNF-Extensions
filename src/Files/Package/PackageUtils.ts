@@ -59,16 +59,17 @@ function createLanguageContributeFromProject(
 }
 
 function createUpdatedContributesFromProjects<
-    T = LanguageContribute | GrammarContribute
+    Contribute = LanguageContribute | GrammarContribute
 >(
     projects: Project[],
-    createContributeFromProject: (project: Project) => T,
-    getContributeId: (contribute: T) => string
-): T[] {
-    const currentContributes: T[] = packageJson.contributes.languages as T[];
+    createContributeFromProject: (project: Project) => Contribute,
+    getContributeId: (contribute: Contribute) => string
+): Contribute[] {
+    const currentContributes: Contribute[] = packageJson.contributes
+        .languages as Contribute[];
 
     const contributeLanguageIds: string[] = currentContributes.map(
-        (contribute: T) => getContributeId(contribute)
+        (contribute: Contribute) => getContributeId(contribute)
     );
 
     const projectLanguageIds: string[] = projects.map(
@@ -79,11 +80,11 @@ function createUpdatedContributesFromProjects<
         (project) => !contributeLanguageIds.includes(project.languageId)
     );
 
-    const newContributes: T[] = currentContributes
-        .filter((contribute: T) =>
+    const newContributes: Contribute[] = currentContributes
+        .filter((contribute: Contribute) =>
             projectLanguageIds.includes(getContributeId(contribute))
         )
-        .map((contribute: T) => {
+        .map((contribute: Contribute) => {
             const project: Project | undefined = projects.find(
                 (project) => project.languageId === getContributeId(contribute)
             );

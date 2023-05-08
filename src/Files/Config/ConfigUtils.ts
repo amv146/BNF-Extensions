@@ -19,16 +19,16 @@ export function generateTokensFromConfigGrammar(config: Config): Token[] {
             return;
         } else if (!configGrammarEntry.values) {
             return;
-        } else {
-            const newTokens: RegularToken[] = configGrammarEntry.values.map(
-                (value) => ({
-                    type: configGrammarEntry.type,
-                    value,
-                })
-            );
-
-            tokens = [...tokens, ...newTokens];
         }
+
+        const newTokens: RegularToken[] = configGrammarEntry.values.map(
+            (value) => ({
+                type: configGrammarEntry.type,
+                value,
+            })
+        );
+
+        tokens = [...tokens, ...newTokens];
     });
 
     if (config.options?.highlightNumbers) {
@@ -37,12 +37,7 @@ export function generateTokensFromConfigGrammar(config: Config): Token[] {
             type: TokenType.number,
         });
     }
-    if (config.options?.highlightStrings) {
-        tokens.push({
-            value: "string",
-            type: TokenType.string,
-        });
-    }
+
     if (config.options?.highlightCharacters) {
         tokens.push({
             value: "character",

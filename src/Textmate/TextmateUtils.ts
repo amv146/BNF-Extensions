@@ -17,6 +17,8 @@ export function generateTextmate(
     languageName: string,
     languageId: string
 ): TextmateFile {
+    tokens = TokenUtils.sortTokens(tokens);
+
     const textmate: TextmateFile = {
         $schema: Strings.textmateLanguageSchema,
         name: languageName,
@@ -39,17 +41,41 @@ function generateJoinedTokenRegex<T extends Token>(
 
 function generateBasicPattern(
     tokens: RegularToken[],
-    tokenType: TokenType,
-    wordBoundary = true
+    tokenType: TokenType
 ): TextmatePattern {
-    const tokensRegex: string = generateJoinedTokenRegex(
-        tokens,
-        (token) => token.value
+    const wordBoundaryTokens: RegularToken[] = tokens.filter(
+        (token) => token.value[0]?.match(RegExps.wordBoundaryPattern) !== null
     );
+
+    let wordBoundaryRegex: string = "";
+
+    if (wordBoundaryTokens.length > 0) {
+        wordBoundaryRegex = `(\\b(${generateJoinedTokenRegex(
+            wordBoundaryTokens,
+            (token) => token.value
+        )})\\b)`;
+    }
+
+    const nonWordBoundaryTokens: RegularToken[] = tokens.filter(
+        (token) => token.value[0]?.match(RegExps.wordBoundaryPattern) === null
+    );
+
+    let nonWordBoundaryRegex: string = "";
+
+    if (nonWordBoundaryTokens.length > 0) {
+        nonWordBoundaryRegex = `(${generateJoinedTokenRegex(
+            nonWordBoundaryTokens,
+            (token) => token.value
+        )})`;
+    }
+
+    if (wordBoundaryRegex.length > 0 && nonWordBoundaryRegex.length > 0) {
+        wordBoundaryRegex += "|";
+    }
 
     return {
         name: TokenUtils.tokenTypeToTextmateScope(tokenType),
-        match: wordBoundary ? `\\b(${tokensRegex})\\b` : tokensRegex,
+        match: wordBoundaryRegex + nonWordBoundaryRegex,
     };
 }
 
@@ -100,9 +126,10 @@ function generateNumberPattern(): TextmatePattern {
     };
 }
 
-function generateStringPattern(): TextmatePattern {
+function generateStringPattern(tokens: RegularToken[]): TextmatePattern {
     return {
-        match: RegExps.stringPattern.source,
+        match: RegExpUtils.createStringRegex(tokens.map((token) => token.value))
+            .source,
         name: TokenUtils.tokenTypeToTextmateScope(TokenType.string),
     };
 }
@@ -114,28 +141,23 @@ function generatePattern(
     switch (tokenType) {
         case TokenType.blockComment:
             return generateBlockCommentPattern(tokens as BlockCommentToken[]);
+        case TokenType.character:
+            return generateCharacterPattern();
         case TokenType.comment:
             return generateLineCommentPattern(tokens as RegularToken[]);
         case TokenType.constant:
         case TokenType.function:
         case TokenType.keyword:
         case TokenType.type:
-            return generateBasicPattern(tokens as RegularToken[], tokenType);
-        case TokenType.number:
-            return generateNumberPattern();
         case TokenType.operator:
         case TokenType.punctuation:
         case TokenType.separator:
         case TokenType.terminator:
-            return generateBasicPattern(
-                tokens as RegularToken[],
-                tokenType,
-                false
-            );
+            return generateBasicPattern(tokens as RegularToken[], tokenType);
+        case TokenType.number:
+            return generateNumberPattern();
         case TokenType.string:
-            return generateStringPattern();
-        case TokenType.character:
-            return generateCharacterPattern();
+            return generateStringPattern(tokens as RegularToken[]);
     }
 }
 

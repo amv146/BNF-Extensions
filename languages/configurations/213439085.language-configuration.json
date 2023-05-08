@@ -1,0 +1,28 @@
+{
+    "autoClosingPairs": [
+        [
+            "\"",
+            "\""
+        ],
+        [
+            "'",
+            "'"
+        ]
+    ],
+    "brackets": [
+        [
+            "(",
+            ")"
+        ]
+    ],
+    "comments": {
+        "lineComment": "//",
+        "blockComment": [
+            "/*",
+            "*/"
+        ]
+    },
+    "indentationRules": {
+        "increaseIndentPattern": "^((?!\\/\\/).)*(\\([^\\)\"'\\`]*)$"
+    }
+}

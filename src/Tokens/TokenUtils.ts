@@ -5,7 +5,34 @@ import {
     RegularToken,
     Token,
     TokenType,
+    tokenOrder,
 } from "@/Tokens/Token";
+
+export function sortTokens(tokens: Token[]): Token[] {
+    return tokens.sort((a, b) => {
+        const aIndex = tokenOrder.indexOf(a.type);
+        const bIndex = tokenOrder.indexOf(b.type);
+
+        if (aIndex < 0) {
+            throw new Error(`Unknown token type: ${a.type}`);
+        }
+
+        if (bIndex < 0) {
+            throw new Error(`Unknown token type: ${b.type}`);
+        }
+
+        if (aIndex === bIndex) {
+            if (a.type !== TokenType.blockComment) {
+                const aValue = (a as RegularToken).value;
+                const bValue = (b as RegularToken).value;
+
+                return bValue.length - aValue.length;
+            }
+        }
+
+        return aIndex - bIndex;
+    });
+}
 
 export function tokenTypeToTextmateScope(tokenType: TokenType): TextmateScope {
     return TextmateScope[tokenType];

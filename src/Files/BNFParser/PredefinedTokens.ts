@@ -52,6 +52,7 @@ export enum PredefinedTokenValues {
     package = "package",
     private = "private",
     public = "public",
+    rec = "rec",
     require = "require",
     return = "return",
     short = "short",
@@ -82,6 +83,7 @@ export enum PredefinedTokenValues {
     ">" = ">",
     '"' = '"',
     "'" = "'",
+    "`" = "`",
 }
 
 export const tokenTypeByPredefinedTokenValue: Record<
@@ -139,6 +141,7 @@ export const tokenTypeByPredefinedTokenValue: Record<
     [PredefinedTokenValues.package]: TokenType.keyword,
     [PredefinedTokenValues.private]: TokenType.keyword,
     [PredefinedTokenValues.public]: TokenType.keyword,
+    [PredefinedTokenValues.rec]: TokenType.keyword,
     [PredefinedTokenValues.require]: TokenType.keyword,
     [PredefinedTokenValues.return]: TokenType.keyword,
     [PredefinedTokenValues.short]: TokenType.type,
@@ -169,4 +172,5 @@ export const tokenTypeByPredefinedTokenValue: Record<
     [PredefinedTokenValues[">"]]: TokenType.punctuation,
     [PredefinedTokenValues['"']]: TokenType.punctuation,
     [PredefinedTokenValues["'"]]: TokenType.punctuation,
+    [PredefinedTokenValues["`"]]: TokenType.punctuation,
 };

@@ -1,4 +1,5 @@
 import * as EnumUtils from "@/EnumUtils";
+import * as RegExpUtils from "@/RegExpUtils";
 import * as RegExps from "@/RegExps";
 import {
     LanguageCommentsConfiguration,
@@ -26,7 +27,7 @@ export function generateLanguageConfigurationFile(
     const languageConfigurationFile: LanguageConfigurationFile = {};
 
     const autoClosingPairs: [string, string][] = [];
-    const brackets: [string, string][] = [];
+    const brackets: [string, string][] = [["(", ")"]];
     const comments: LanguageCommentsConfiguration = {};
 
     const lineCommentTokens: Token[] = tokens.filter(
@@ -51,17 +52,17 @@ export function generateLanguageConfigurationFile(
         ];
     }
 
-    const autoClosingPairTokens: Token[] = tokens.filter(
-        (token) => token.type === TokenType.punctuation
-    );
-
-    autoClosingPairTokens.forEach((token) => {
+    tokens.forEach((token) => {
         const punctuationToken: RegularToken = token as RegularToken;
-        const autoClosingPairEndToken: string | undefined =
+        let autoClosingPairEndToken: string | undefined =
             autoClosingPairEndTokensForBeginToken[punctuationToken.value];
 
         if (!autoClosingPairEndToken) {
-            return;
+            if (token.type === TokenType.string) {
+                autoClosingPairEndToken = punctuationToken.value;
+            } else {
+                return;
+            }
         }
 
         autoClosingPairs.push([
@@ -78,7 +79,10 @@ export function generateLanguageConfigurationFile(
     languageConfigurationFile.brackets = brackets;
     languageConfigurationFile.comments = comments;
     languageConfigurationFile.indentationRules = {
-        increaseIndentPattern: RegExps.increaseIndentPattern.source,
+        increaseIndentPattern: RegExpUtils.createIncreaseIndentRegex(
+            comments.lineComment ?? "",
+            brackets
+        ).source,
     };
 
     return languageConfigurationFile;

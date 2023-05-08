@@ -1,27 +1,11 @@
 {
-    "name": "bnf-extensions",
-    "displayName": "BNF Extensions",
-    "description": "",
-    "version": "0.0.2",
-    "engines": {
-        "vscode": "^1.73.0"
-    },
-    "icon": "logo.png",
-    "categories": [
-        "Other"
-    ],
     "activationEvents": [
         "onStartupFinished"
     ],
-    "main": "./out/Extension.js",
+    "categories": [
+        "Other"
+    ],
     "contributes": {
-        "grammars": [
-            {
-                "language": "210443106",
-                "path": "languages/syntaxes/210443106.tmLanguage.json",
-                "scopeName": "source.210443106"
-            }
-        ],
         "commands": [
             {
                 "command": "bnf-extensions.buildGrammar",
@@ -36,14 +20,27 @@
                 "title": "BNF Extensions: Parse Current Project's Main Grammar File"
             }
         ],
+        "grammars": [
+            {
+                "language": "213439085",
+                "path": "languages/syntaxes/213439085.tmLanguage.json",
+                "scopeName": "source.213439085"
+            }
+        ],
+        "languages": [
+            {
+                "aliases": [
+                    "Lambda Nat 5",
+                    "213439085"
+                ],
+                "extensions": [
+                    ".lc5"
+                ],
+                "id": "213439085",
+                "configuration": "languages/configurations/213439085.language-configuration.json"
+            }
+        ],
         "menus": {
-            "explorer/context": [
-                {
-                    "command": "bnf-extensions.createConfigFile",
-                    "when": "explorerResourceIsFolder",
-                    "group": "navigation@1"
-                }
-            ],
             "commandPalette": [
                 {
                     "command": "bnf-extensions.buildGrammar",
@@ -52,45 +49,21 @@
                 {
                     "command": "bnf-extensions.parseGrammarFile"
                 }
+            ],
+            "explorer/context": [
+                {
+                    "command": "bnf-extensions.createConfigFile",
+                    "when": "explorerResourceIsFolder",
+                    "group": "navigation@1"
+                }
             ]
-        },
-        "languages": [
-            {
-                "aliases": [
-                    "C--",
-                    "210443106"
-                ],
-                "extensions": [
-                    ".cmm"
-                ],
-                "id": "210443106",
-                "configuration": "languages/configurations/210443106.language-configuration.json"
-            }
-        ]
+        }
     },
-    "publisher": "alexvallone",
-    "scripts": {
-        "esbuild-base": "esbuild ./src/Extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-        "esbuild": "npm run esbuild-base -- --sourcemap",
-        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-        "compile": "tsc -p ./ && tspath -f",
-        "publish": "npx vsce publish",
-        "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./out",
-        "watch": "tsc -watch -p ./",
-        "pretest": "npm run build && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js",
-        "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
-        "vscode:prepublish": "npm run package",
-        "webpack": "webpack --mode development",
-        "webpack-dev": "webpack --mode development --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "test-compile": "tsc -p ./"
+    "dependencies": {
+        "app-root-path": "^3.1.0",
+        "tslint-config-prettier": "^1.18.0"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.coNFm/amv146/BC-Extensions"
-    },
+    "description": "",
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/glob": "^8.0.0",
@@ -109,8 +82,35 @@
         "webpack-cli": "^5.0.2",
         "xregexp": "^5.1.1"
     },
-    "dependencies": {
-        "app-root-path": "^3.1.0",
-        "tslint-config-prettier": "^1.18.0"
-    }
+    "displayName": "BNF Extensions",
+    "engines": {
+        "vscode": "^1.73.0"
+    },
+    "icon": "logo.png",
+    "main": "./out/Extension.js",
+    "name": "bnf-extensions",
+    "publisher": "alexvallone",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/amv146/BNFC-Extensions"
+    },
+    "scripts": {
+        "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./out",
+        "compile": "tsc -p ./ && tspath -f",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-base": "esbuild ./src/Extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "lint": "eslint src --ext ts",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "pretest": "npm run build && npm run lint",
+        "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
+        "publish": "npx vsce publish",
+        "test": "node ./out/test/runTest.js",
+        "test-compile": "tsc -p ./",
+        "vscode:prepublish": "npm run package",
+        "watch": "tsc -watch -p ./",
+        "webpack": "webpack --mode development",
+        "webpack-dev": "webpack --mode development --watch"
+    },
+    "version": "0.0.3"
 }

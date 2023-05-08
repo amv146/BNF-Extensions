@@ -1,5 +1,25 @@
 import * as XRegExp from "xregexp";
 
+let clean = (piece: string) =>
+    piece
+        .replace(
+            /((^|\n)(?:[^\/\\]|\/[^*\/]|\\.)*?)\s*\/\*(?:[^*]|\*[^\/])*(\*\/|)/g,
+            "$1"
+        )
+        .replace(/((^|\n)(?:[^\/\\]|\/[^\/]|\\.)*?)\s*\/\/[^\n]*/g, "$1")
+        .replace(/\n\s*/g, "");
+
+const regex = (raw: TemplateStringsArray, ...interpolations: string[]) =>
+    new RegExp(
+        clean(
+            raw.reduce(
+                (acc, piece, i) => acc + piece + (interpolations[i] || ""),
+                ""
+            )
+        ),
+        "g"
+    );
+
 export const bnfCommentPattern: RegExp = XRegExp(
     /comment\s+(?:"(?<beginComment>\S+)")\s+(?:"(?<endComment>\S+)")?\s*;/g
         .source,
@@ -19,12 +39,12 @@ export const bnfTokenPattern: RegExp = XRegExp(
     /\s*(?:(?<name>[^\s,]*)=(?<type>[^\s,]*))/g.source,
     "x"
 );
-export const bnfTerminatorPattern: RegExp = XRegExp(
-    /terminator\s+(?<category>\S+)\s+(?:"(?<terminator>\S+)")\s*;/g.source,
-    "x"
-);
 export const bnfSeparatorPattern: RegExp = XRegExp(
     /separator\s+(?<category>\S+)\s+(?:"(?<separator>\S+)")\s*;/g.source,
+    "x"
+);
+export const bnfTerminatorPattern: RegExp = XRegExp(
+    /terminator\s+(?<category>\S+)\s+(?:"(?<terminator>\S+)")\s*;/g.source,
     "x"
 );
 export const characterPattern: RegExp = XRegExp(
@@ -33,12 +53,12 @@ export const characterPattern: RegExp = XRegExp(
 );
 export const containsLetterPattern: RegExp = XRegExp(/[a-zA-Z]/g.source, "x");
 export const increaseIndentPattern: RegExp = XRegExp(
-    /^((?!\/\/).)*(\{[^}"'`]*|\([^)"'`]*|\[[^\]"'`]*)$/g.source,
+    /^((?!\/\/).)*(\{[^}"'`]*|\([^)"'`]*|\[[^\]"'`]*)$/gs.source,
     "x"
 );
-
 export const numberPattern: RegExp = XRegExp(
-    /(?<number>(?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\d+\.\d+)|(?:\d+))/g.source,
+    /\b(?<number>(?:0x[0-9a-fA-F]+)|(?:0b[01]+)|(?:\d+\.\d+)|(?:\d+))\b/g
+        .source,
     "x"
 );
 export const splitWordsPattern: RegExp = XRegExp(
@@ -47,5 +67,9 @@ export const splitWordsPattern: RegExp = XRegExp(
 );
 export const stringPattern: RegExp = XRegExp(
     /(?<string>(?:"(?:[^"]|")*"))/g.source,
+    "x"
+);
+export const wordBoundaryPattern: RegExp = XRegExp(
+    /([A-Za-z].*[A-Za-z])|[A-Za-z]/g.source,
     "x"
 );
