@@ -1,13 +1,14 @@
-import {
-    PredefinedTokenValues,
-    tokenTypeByPredefinedTokenValue,
-} from "./PredefinedTokens";
 import { ExecArray } from "xregexp";
 
 import * as EnumUtils from "@/EnumUtils";
+import * as LineTypeUtils from "@/Files/BNFParser/LineTypeUtils";
+import * as PredefinedTokenUtils from "@/Files/BNFParser/PredefinedTokenUtils";
 import * as FileSystemEntryUtils from "@/Files/FileSystemEntryUtils";
 import * as RegExpUtils from "@/RegExpUtils";
 import * as RegExps from "@/RegExps";
+import { LineResult } from "@/Files/BNFParser/LineResult";
+import { LineType } from "@/Files/BNFParser/LineType";
+import { PredefinedTokenValue } from "@/Files/BNFParser/PredefinedTokens";
 import {
     BlockCommentToken,
     RegularToken,
@@ -17,14 +18,32 @@ import {
 
 import XRegExp = require("xregexp");
 
+export function defaultTokens(): Token[] {
+    const tokens: Token[] = [
+        {
+            type: TokenType.punctuation,
+            value: "(",
+        },
+        {
+            type: TokenType.punctuation,
+            value: ")",
+        },
+    ];
+
+    return tokens;
+}
+
 export async function parseGrammarFile(grammarPath: string): Promise<Token[]> {
     const lines: string[] = await FileSystemEntryUtils.readFileLines(
         grammarPath
     );
 
     const tokens: Token[] = lines.map((line) => parseLine(line)).flat();
+    tokens.push(...defaultTokens());
 
-    // Remove duplicates from tokens
+    /**
+     * Remove duplicates from tokens
+     */
     const tokensByValue: Map<string, Token> = new Map();
 
     tokens.forEach((token) => {
@@ -42,28 +61,58 @@ export async function parseGrammarFile(grammarPath: string): Promise<Token[]> {
     return Array.from(tokensByValue.values());
 }
 
-function parseLine(line: string): Token[] {
-    // Ignore empty lines and comments
-    if (
-        line.trim() === "" ||
-        XRegExp.test(line, RegExps.bnfInternalCommentPattern)
-    ) {
-        return [];
+function getLineResult(line: string): LineResult {
+    for (const lineType of Object.values(LineType)) {
+        if (lineType === LineType.unknown) {
+            continue;
+        }
+
+        const regExp: RegExp = LineTypeUtils.lineTypeToBNFRegExp(lineType);
+        const match: ExecArray | null = XRegExp.exec(line, regExp);
+
+        if (match) {
+            return {
+                lineType,
+                line,
+                match,
+            };
+        }
     }
 
-    const declarationMatch: ExecArray | null = XRegExp.exec(
+    return {
+        lineType: LineType.unknown,
         line,
-        RegExps.bnfDeclarationPattern
-    );
+    };
+}
 
-    if (declarationMatch) {
-        const syntaxGroup: string = declarationMatch.groups?.syntax ?? "";
-        const tokens: Token[] = [];
+function parseCommentRule(match: RegExpExecArray): Token[] {
+    const beginCommentGroup: string = match.groups?.beginComment ?? "";
+    const endCommentGroup: string | undefined = match.groups?.endComment;
 
-        RegExpUtils.findAllMatches(
-            RegExps.bnfSyntaxPattern,
-            syntaxGroup
-        ).forEach((match) => {
+    if (endCommentGroup) {
+        return [
+            {
+                type: TokenType.blockComment,
+                begin: beginCommentGroup,
+                end: endCommentGroup,
+            },
+        ];
+    }
+
+    return [
+        {
+            type: TokenType.comment,
+            value: beginCommentGroup,
+        },
+    ];
+}
+
+function parseDeclarationRule(match: RegExpExecArray): Token[] {
+    const syntaxGroup: string = match.groups?.syntax ?? "";
+    const tokens: Token[] = [];
+
+    RegExpUtils.findAllMatches(RegExps.bnfSyntaxPattern, syntaxGroup).forEach(
+        (match) => {
             if (!match.groups?.string) {
                 return;
             }
@@ -71,12 +120,14 @@ function parseLine(line: string): Token[] {
             const values: string[] = match.groups.string.split(" ");
 
             values.forEach((value) => {
-                const predefinedTokenValue: PredefinedTokenValues | undefined =
-                    EnumUtils.fromStringValue(PredefinedTokenValues, value);
+                const predefinedTokenValue: PredefinedTokenValue | undefined =
+                    EnumUtils.fromStringValue(PredefinedTokenValue, value);
 
                 let tokenType: TokenType | undefined =
                     predefinedTokenValue &&
-                    tokenTypeByPredefinedTokenValue[predefinedTokenValue];
+                    PredefinedTokenUtils.predefinedTokenValueToTokenType(
+                        predefinedTokenValue
+                    );
 
                 tokenType =
                     tokenType ||
@@ -84,80 +135,59 @@ function parseLine(line: string): Token[] {
                         ? TokenType.function
                         : TokenType.operator);
 
-                console.log(value, tokenType);
-
                 tokens.push({
                     type: tokenType,
                     value: value,
                 } as RegularToken);
             });
-        });
-
-        return tokens;
-    }
-
-    const commentMatch: ExecArray | null = XRegExp.exec(
-        line,
-        RegExps.bnfCommentPattern
-    );
-
-    if (commentMatch) {
-        const beginCommentGroup: string =
-            commentMatch.groups?.beginComment ?? "";
-
-        const endCommentGroup: string | undefined =
-            commentMatch.groups?.endComment;
-
-        if (endCommentGroup) {
-            return [
-                {
-                    type: TokenType.blockComment,
-                    begin: beginCommentGroup,
-                    end: endCommentGroup,
-                },
-            ];
         }
-
-        return [
-            {
-                type: TokenType.comment,
-                value: beginCommentGroup,
-            },
-        ];
-    }
-
-    const terminatorMatch: ExecArray | null = XRegExp.exec(
-        line,
-        RegExps.bnfTerminatorPattern
     );
 
-    if (terminatorMatch) {
-        const terminatorGroup: string =
-            terminatorMatch.groups?.terminator ?? "";
+    return tokens;
+}
 
-        return [
-            {
-                type: TokenType.terminator,
-                value: terminatorGroup,
-            },
-        ];
+function parseLine(line: string): Token[] {
+    if (line.trim() === "") {
+        return [];
     }
 
-    const separatorMatch: ExecArray | null = XRegExp.exec(
-        line,
-        RegExps.bnfSeparatorPattern
-    );
+    const lineResult: LineResult = getLineResult(line);
 
-    if (separatorMatch) {
-        const separatorGroup: string = separatorMatch.groups?.separator ?? "";
-
-        return [
-            {
-                type: TokenType.separator,
-                value: separatorGroup,
-            },
-        ];
+    switch (lineResult.lineType) {
+        case LineType.internalComment:
+            return [];
+        case LineType.commentRule:
+            return parseCommentRule(lineResult.match);
+        case LineType.declarationRule:
+            return parseDeclarationRule(lineResult.match);
+        case LineType.separatorRule:
+            return parseSeparatorRule(lineResult.match);
+        case LineType.terminatorRule:
+            return parseTerminatorRule(lineResult.match);
+        case LineType.internalRule:
+        case LineType.unknown:
+            return [];
     }
+}
 
-    return [];
+function parseSeparatorRule(match: RegExpExecArray): Token[] {
+    const separatorGroup: string = match.groups?.separator ?? "";
+
+    return [
+        {
+            type: TokenType.separator,
+            value: separatorGroup,
+        },
+    ];
+}
+
+function parseTerminatorRule(match: RegExpExecArray): Token[] {
+    const terminatorGroup: string = match.groups?.terminator ?? "";
+
+    return [
+        {
+            type: TokenType.terminator,
+            value: terminatorGroup,
+        },
+    ];
 }

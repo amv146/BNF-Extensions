@@ -31,13 +31,28 @@ export const tokenOrder: TokenType[] = [
 ];
 
 export interface BlockCommentToken {
+    /**
+     * The type of token. This should be `TokenType.blockComment`.
+     */
     type: TokenType.blockComment;
+    /**
+     * The string that starts the block comment.
+     */
     begin: string;
+    /**
+     * The string that ends the block comment.
+     */
     end: string;
 }
 
 export interface RegularToken {
+    /**
+     * The type of token. This should be one of the `TokenType` enum values except for `TokenType.blockComment`.
+     */
     type: Exclude<TokenType, TokenType.blockComment>;
+    /**
+     * The value of the token. This should be a string that will be highlighted as the `type` of the token.
+     */
     value: string;
 }
 

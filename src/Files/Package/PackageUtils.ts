@@ -41,7 +41,7 @@ function createGrammarContributeFromProject(
     return {
         language: languageId,
         path: PathUtils.getLanguageSyntaxPath(languageId, true),
-        scopeName: Strings.scopeNamePrefix + languageId,
+        scopeName: Strings.scopePrefix + languageId,
     };
 }
 
@@ -68,14 +68,20 @@ function createUpdatedContributesFromProjects<
     const currentContributes: Contribute[] = packageJson.contributes
         .languages as Contribute[];
 
+    /**
+     * Get the language IDs of the current contributes in the `package.json` file.
+     */
     const contributeLanguageIds: string[] = currentContributes.map(
-        (contribute: Contribute) => getContributeId(contribute)
+        (contribute) => getContributeId(contribute)
     );
 
     const projectLanguageIds: string[] = projects.map(
         (project) => project.languageId
     );
 
+    /**
+     * Projects that are not already in the `package.json` file.
+     */
     const projectsToAdd: Project[] = projects.filter(
         (project) => !contributeLanguageIds.includes(project.languageId)
     );

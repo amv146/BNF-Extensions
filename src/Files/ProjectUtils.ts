@@ -121,7 +121,7 @@ export async function updateProjectFiles(project: Project): Promise<void> {
     const tokens: Token[] =
         ConfigUtils.generateTokensFromConfigGrammar(project);
 
-    const textmateFile: TextmateFile = TextmateUtils.generateTextmate(
+    const textmateFile: TextmateFile = TextmateUtils.createTextmate(
         tokens,
         project.languageName,
         project.languageId

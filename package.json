@@ -22,22 +22,22 @@
         ],
         "grammars": [
             {
-                "language": "213439085",
-                "path": "languages/syntaxes/213439085.tmLanguage.json",
-                "scopeName": "source.213439085"
+                "language": "214187918",
+                "path": "languages/syntaxes/214187918.tmLanguage.json",
+                "scopeName": "source.214187918"
             }
         ],
         "languages": [
             {
                 "aliases": [
                     "Lambda Nat 5",
-                    "213439085"
+                    "214187918"
                 ],
                 "extensions": [
                     ".lc5"
                 ],
-                "id": "213439085",
-                "configuration": "languages/configurations/213439085.language-configuration.json"
+                "id": "214187918",
+                "configuration": "languages/configurations/214187918.language-configuration.json"
             }
         ],
         "menus": {
@@ -54,7 +54,7 @@
                 {
                     "command": "bnf-extensions.createConfigFile",
                     "when": "explorerResourceIsFolder",
-                    "group": "navigation@1"
+                    "group": "navigation@100"
                 }
             ]
         }
@@ -67,6 +67,7 @@
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/glob": "^8.0.0",
+        "@types/jest": "^29.5.1",
         "@types/node": "16.x",
         "@types/vscode": "^1.73.0",
         "@typescript-eslint/eslint-plugin": "^5.42.0",

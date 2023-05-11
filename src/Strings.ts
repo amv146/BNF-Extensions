@@ -6,7 +6,8 @@ export const languageConfigurationFileExtension =
     ".language-configuration.json";
 export const languageSyntaxFileExtension = ".tmLanguage.json";
 export const loadingProjects = "Loading projects...";
-export const scopeNamePrefix = "source.";
+export const number = "number";
+export const scopePrefix = "source.";
 export const textmateLanguageSchema =
     "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json";
 export const configSchema =

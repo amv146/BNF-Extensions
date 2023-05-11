@@ -11,15 +11,15 @@ XRegExp.install({
     namespacing: true,
 });
 
+export function addWordBoundaries(regex: string): string {
+    return `\\b(${regex})\\b`;
+}
+
 export function containsLetter(text: string): boolean {
     return XRegExp.test(text, RegExps.containsLetterPattern);
 }
 
-export function escapeRegex(string: string): string {
-    return string.replace(/[-[\]{}()*+?.,^$|#\s]/g, "\\$&");
-}
-
-export function createIncreaseIndentRegex(
+export function increaseIndentRegex(
     lineComment: string,
     brackets: [string, string][]
 ): RegExp {
@@ -39,7 +39,7 @@ export function createIncreaseIndentRegex(
     );
 }
 
-export function createStringRegex(values: string[]): RegExp {
+export function matchStringRegex(values: string[]): RegExp {
     return XRegExp(
         values
             .map(
@@ -51,6 +51,10 @@ export function createStringRegex(values: string[]): RegExp {
             .join("|"),
         "gs"
     );
+}
+
+export function escapeRegex(string: string): string {
+    return string.replace(/[-[\]{}()*+?.,^$|#\s]/g, "\\$&");
 }
 
 export function findAllMatches(

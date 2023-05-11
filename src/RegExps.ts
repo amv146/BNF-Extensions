@@ -1,25 +1,5 @@
 import * as XRegExp from "xregexp";
 
-let clean = (piece: string) =>
-    piece
-        .replace(
-            /((^|\n)(?:[^\/\\]|\/[^*\/]|\\.)*?)\s*\/\*(?:[^*]|\*[^\/])*(\*\/|)/g,
-            "$1"
-        )
-        .replace(/((^|\n)(?:[^\/\\]|\/[^\/]|\\.)*?)\s*\/\/[^\n]*/g, "$1")
-        .replace(/\n\s*/g, "");
-
-const regex = (raw: TemplateStringsArray, ...interpolations: string[]) =>
-    new RegExp(
-        clean(
-            raw.reduce(
-                (acc, piece, i) => acc + piece + (interpolations[i] || ""),
-                ""
-            )
-        ),
-        "g"
-    );
-
 export const bnfCommentPattern: RegExp = XRegExp(
     /comment\s+(?:"(?<beginComment>\S+)")\s+(?:"(?<endComment>\S+)")?\s*;/g
         .source,
@@ -31,6 +11,10 @@ export const bnfDeclarationPattern: RegExp = XRegExp(
     "x"
 );
 export const bnfInternalCommentPattern: RegExp = XRegExp(/--.*/g.source, "x");
+export const bnfInternalRulePattern: RegExp = XRegExp(
+    /\s*internal\s*;/g.source,
+    "x"
+);
 export const bnfSyntaxPattern: RegExp = XRegExp(
     /(?:"(?<string>[^"]+)"|(?<category>[^\s"]+))(?:\s+|$)/g.source,
     "x"

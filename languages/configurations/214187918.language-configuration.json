@@ -1,14 +1,5 @@
 {
-    "autoClosingPairs": [
-        [
-            "\"",
-            "\""
-        ],
-        [
-            "'",
-            "'"
-        ]
-    ],
+    "autoClosingPairs": [],
     "brackets": [
         [
             "(",
@@ -23,6 +14,6 @@
         ]
     },
     "indentationRules": {
-        "increaseIndentPattern": "^((?!\\/\\/).)*(\\([^)\"'`]*)$"
+        "increaseIndentPattern": "^((?!\\/\\/).)*(\\([^\\)\"'\\`]*)$"
     }
 }

@@ -82,6 +82,7 @@ export async function createConfigFile(
         fileExtensions: [languageFileExtension],
         options: {
             createLanguageConfigurationFile: true,
+            highlightNumbers: true,
         },
         grammar: mainGrammarPath
             ? TokenUtils.tokensToConfigGrammar(

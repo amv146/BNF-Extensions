@@ -52,14 +52,6 @@
                 "highlightNumbers": {
                     "description": "Whether or not to highlight numbers.",
                     "type": "boolean"
-                },
-                "highlightStrings": {
-                    "description": "Whether or not to highlight strings.",
-                    "type": "boolean"
-                },
-                "highlightCharacters": {
-                    "description": "Whether or not to highlight characters.",
-                    "type": "boolean"
                 }
             },
             "additionalProperties": false
@@ -102,6 +94,7 @@
                 "type": {
                     "type": "string",
                     "enum": [
+                        "character",
                         "comment",
                         "constant",
                         "function",
@@ -109,10 +102,15 @@
                         "operator",
                         "punctuation",
                         "separator",
+                        "string",
                         "terminator",
                         "type"
                     ],
                     "oneOf": [
+                        {
+                            "const": "character",
+                            "description": "A character in the language. This is typically used to surround a single character and is applied at the beginning and end of every character. The most common example of this is single quotes."
+                        },
                         {
                             "const": "comment",
                             "description": "A single line comment in the language."

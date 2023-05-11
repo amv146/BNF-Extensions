@@ -58,7 +58,9 @@ function registerOnSaveConfigFile(): void {
             return;
         }
 
-        // If a project is currently selected, check if the saved file is the config file of the selected project.
+        /**
+         * If a project is currently selected, check if the saved file is the config file of the selected project.
+         */
         if (selectedProject) {
             const currentProjectLanguageId: string = selectedProject.languageId;
 
@@ -96,15 +98,24 @@ function registerOnSaveConfigFile(): void {
     });
 }
 
+/**
+ * When files are deleted, this function will be called.
+ * If the deleted file is a `config.bnf.json` file, the function will check if one of the deleted files is the config file of the selected project.
+ * If so, select the next closest project.
+ * If not, do nothing.
+ *
+ * Additionally, the function will remove the deleted project(s) from the storage.
+ */
 function registerOnDeleteConfigFile(): void {
     vscode.workspace.onWillDeleteFiles(async (event) => {
+        /**
+         * Deleted `config.bnf.json` files.
+         */
         const deletedConfigFilePaths: string[] = event.files
             .map((file) => file.fsPath)
             .filter(
                 (filePath) => path.basename(filePath) === Strings.configFileName
             );
-
-        console.log(deletedConfigFilePaths);
 
         if (deletedConfigFilePaths.length === 0) {
             return;
@@ -114,6 +125,11 @@ function registerOnDeleteConfigFile(): void {
             (filePath) => ProjectUtils.configPathToLanguageId(filePath)
         );
 
+        /**
+         * If a project is currently selected, check if the deleted file is the config file of the selected project.
+         * If so, select the next closest project.
+         * If not, do nothing.
+         */
         if (selectedProject) {
             if (deletedLanguageIds.includes(selectedProject.languageId)) {
                 const projects: Project[] = ProjectUtils.findTopMostProjects(
@@ -129,9 +145,7 @@ function registerOnDeleteConfigFile(): void {
         );
 
         StorageUtils.setProjects(newProjects);
-
         PackageUtils.updateContributesFromProjects(newProjects);
-
         updateSelectedProjectStatusBarItem();
     });
 }

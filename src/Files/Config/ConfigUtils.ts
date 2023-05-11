@@ -1,3 +1,4 @@
+import * as Strings from "@/Strings";
 import { Config } from "@/Files/Config/Config";
 import { RegularToken, Token, TokenType } from "@/Tokens/Token";
 
@@ -33,15 +34,8 @@ export function generateTokensFromConfigGrammar(config: Config): Token[] {
 
     if (config.options?.highlightNumbers) {
         tokens.push({
-            value: "number",
+            value: Strings.number,
             type: TokenType.number,
-        });
-    }
-
-    if (config.options?.highlightCharacters) {
-        tokens.push({
-            value: "character",
-            type: TokenType.character,
         });
     }
 
