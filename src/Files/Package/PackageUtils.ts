@@ -40,7 +40,7 @@ function createGrammarContributeFromProject(
 
     return {
         language: languageId,
-        path: PathUtils.getLanguageSyntaxPath(languageId, true),
+        path: PathUtils.languageSyntaxPath(languageId, true),
         scopeName: Strings.scopePrefix + languageId,
     };
 }
@@ -52,12 +52,20 @@ function createLanguageContributeFromProject(
 
     return {
         aliases: [project.languageName, languageId],
+        configuration: PathUtils.languageConfigurationPath(languageId, true),
         extensions: project.fileExtensions,
         id: languageId,
-        configuration: PathUtils.getLanguageConfigurationPath(languageId, true),
     };
 }
 
+/**
+ * Creates an updated list of contributes from the given projects.
+ * @param projects The projects to create the contributes from.
+ * @param createContributeFromProject A function that creates a contribute from a project.
+ * @param getContributeId A function that gets the ID of a contribute.
+ * @returns The updated list of contributes.
+ * @template Contribute The type of the contributes.
+ */
 function createUpdatedContributesFromProjects<
     Contribute = LanguageContribute | GrammarContribute
 >(

@@ -22,22 +22,22 @@
         ],
         "grammars": [
             {
-                "language": "214187918",
-                "path": "languages/syntaxes/214187918.tmLanguage.json",
-                "scopeName": "source.214187918"
+                "language": "214693185",
+                "path": "languages/syntaxes/214693185.tmLanguage.json",
+                "scopeName": "source.214693185"
             }
         ],
         "languages": [
             {
                 "aliases": [
                     "Lambda Nat 5",
-                    "214187918"
+                    "214693185"
                 ],
                 "extensions": [
                     ".lc5"
                 ],
-                "id": "214187918",
-                "configuration": "languages/configurations/214187918.language-configuration.json"
+                "id": "214693185",
+                "configuration": "languages/configurations/214693185.language-configuration.json"
             }
         ],
         "menus": {
@@ -66,6 +66,7 @@
     "description": "",
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+        "@types/app-root-path": "^1.2.5",
         "@types/glob": "^8.0.0",
         "@types/jest": "^29.5.1",
         "@types/node": "16.x",
@@ -79,8 +80,7 @@
         "ts-loader": "^9.4.2",
         "tscpaths": "^0.0.9",
         "typescript": "^5.0.0-dev.20221210",
-        "webpack": "^5.82.0",
-        "webpack-cli": "^5.0.2",
+        "webpack-cli": "^5.1.1",
         "xregexp": "^5.1.1"
     },
     "displayName": "BNF Extensions",
@@ -113,5 +113,5 @@
         "webpack": "webpack --mode development",
         "webpack-dev": "webpack --mode development --watch"
     },
-    "version": "0.0.3"
+    "version": "0.0.4"
 }

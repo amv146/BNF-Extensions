@@ -24,6 +24,17 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.activeTextEditor?.document.fileName || ""
     )[0];
 
+    const buildGrammarDisposable = vscode.commands.registerCommand(
+        "bnf-extensions.buildGrammar",
+        async () => {
+            if (!selectedProject) {
+                return;
+            }
+
+            await ExtensionCommands.buildGrammar(selectedProject);
+        }
+    );
+
     const createConfigFileDisposable = vscode.commands.registerCommand(
         "bnf-extensions.createConfigFile",
         async (file) => {
@@ -42,6 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     );
 
+    context.subscriptions.push(buildGrammarDisposable);
     context.subscriptions.push(createConfigFileDisposable);
     context.subscriptions.push(parseBNFFileDisposable);
 
@@ -168,9 +180,7 @@ function registerUpdateStatusBarItemOnEditorChange() {
 
 function updateSelectedProjectStatusBarItem() {
     if (selectedProject) {
-        selectProjectStatusBarItem.text = `$(file-directory) ${
-            selectedProject.languageName ?? "Unknown"
-        }`;
+        selectProjectStatusBarItem.text = `${Strings.fileDirectoryIcon} ${selectedProject.languageName}`;
     } else {
         selectProjectStatusBarItem.text = "";
     }

@@ -74,7 +74,7 @@ export function getDistanceBetweenPaths(path1: string, path2: string): number {
     );
 }
 
-export const getLanguageConfigurationPath = (
+export const languageConfigurationPath = (
     languageId: string,
     relative: boolean = false
 ): string =>
@@ -85,7 +85,7 @@ export const getLanguageConfigurationPath = (
         languageId + Strings.languageConfigurationFileExtension
     );
 
-export const getLanguageSyntaxPath = (
+export const languageSyntaxPath = (
     languageId: string,
     relative: boolean = false
 ): string =>

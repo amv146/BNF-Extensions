@@ -1,5 +1,5 @@
-import * as vscode from "vscode";
 import * as path from "path";
+import * as vscode from "vscode";
 import { window } from "vscode";
 
 import * as VSCodeUtils from "@/VSCodeUtils";
@@ -18,7 +18,7 @@ export async function promptForLanguageName(): Promise<string | undefined> {
 
 export async function promptForFileExtension(): Promise<string | undefined> {
     const fileExtension: string | undefined = await window.showInputBox({
-        prompt: "Enter the file extension of the language.",
+        prompt: "Enter the file extension of the language (should be in the format `.ext` instead of `ext`).",
     });
 
     return fileExtension;

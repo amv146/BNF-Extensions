@@ -5,6 +5,7 @@ import * as TokenUtils from "@/Tokens/TokenUtils";
 import { TextmateFile } from "@/Textmate/TextmateFile";
 import { TextmatePattern } from "@/Textmate/TextmatePattern";
 import { TextmateRepository } from "@/Textmate/TextmateRepository";
+import { TextmateScope } from "@/Textmate/TextmateScope";
 import {
     BlockCommentToken,
     RegularToken,
@@ -23,6 +24,11 @@ export function createTextmate(
     languageName: string,
     languageId: string
 ): TextmateFile {
+    /**
+     * In TextMate files, the order of the patterns matters. Patterns that
+     * appear first in the file take precedence over patterns that appear
+     * later in the file. The order of the patterns is currently predefined.
+     */
     tokens = TokenUtils.sortTokens(tokens);
 
     const textmate: TextmateFile = {
@@ -135,26 +141,35 @@ function createLineCommentPattern(tokens: RegularToken[]): TextmatePattern {
     return {
         begin: tokensRegex,
         end: /$/.source,
-        name: TokenUtils.tokenTypeToTextmateScope(TokenType.comment),
+        name: TextmateScope.comment,
     };
 }
 
+/**
+ * Creates the number pattern for the TextMate grammar file. This is created
+ * when the config file has `highlightNumbers` set to `true` under the
+ * `options` property.
+ */
 function createNumberPattern(): TextmatePattern {
     return {
         match: RegExps.numberPattern.source,
-        name: TokenUtils.tokenTypeToTextmateScope(TokenType.number),
+        name: TextmateScope.number,
     };
 }
 
 /**
  * @param tokens The tokens to join together to create the textmate string pattern.
+ * @param tokenType The type of the tokens. This should be either `character` or `string`.
  * @returns The TextMate pattern that matches strings of the given tokens.
  */
-function createStringPattern(tokens: RegularToken[]): TextmatePattern {
+function createStringPattern(
+    tokens: RegularToken[],
+    tokenType: TokenType
+): TextmatePattern {
     return {
         match: RegExpUtils.matchStringRegex(tokens.map((token) => token.value))
             .source,
-        name: TokenUtils.tokenTypeToTextmateScope(TokenType.string),
+        name: TokenUtils.tokenTypeToTextmateScope(tokenType),
     };
 }
 
@@ -169,7 +184,7 @@ function createPattern(tokens: Token[], tokenType: TokenType): TextmatePattern {
             return createBlockCommentPattern(tokens as BlockCommentToken[]);
         case TokenType.character:
         case TokenType.string:
-            return createStringPattern(tokens as RegularToken[]);
+            return createStringPattern(tokens as RegularToken[], tokenType);
         case TokenType.comment:
             return createLineCommentPattern(tokens as RegularToken[]);
         case TokenType.constant:

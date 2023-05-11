@@ -73,22 +73,32 @@ export async function createConfigFile(
 
     const configFile: number = fs.openSync(configFilePath, "w");
 
+    /**
+     * If the main grammar file is in a subdirectory of the selected directory, the path to the main grammar file is relative to the selected directory.
+     */
+    const mainGrammarRelativePath: string | undefined = mainGrammarPath
+        ? path.relative(selectedEntryPath, mainGrammarPath)
+        : undefined;
+
+    /**
+     * If a main grammar file is specified, parse it and add the parsed grammar to the config file. Otherwise, leave the grammar empty.
+     */
+    const grammar: ConfigGrammar[] = mainGrammarRelativePath
+        ? TokenUtils.tokensToConfigGrammar(
+              await BNFParser.parseGrammarFile(mainGrammarPath)
+          )
+        : [];
+
     const config: Config = {
         $schema: Strings.configSchema,
-        mainGrammarPath: mainGrammarPath
-            ? path.relative(selectedEntryPath, mainGrammarPath)
-            : undefined,
-        languageName: languageName,
+        mainGrammarPath: mainGrammarRelativePath,
+        languageName,
         fileExtensions: [languageFileExtension],
         options: {
-            createLanguageConfigurationFile: true,
-            highlightNumbers: true,
+            createLanguageConfigurationFile: !!mainGrammarRelativePath,
+            highlightNumbers: !!mainGrammarRelativePath,
         },
-        grammar: mainGrammarPath
-            ? TokenUtils.tokensToConfigGrammar(
-                  await BNFParser.parseGrammarFile(mainGrammarPath)
-              )
-            : [],
+        grammar,
     };
 
     FileSystemEntryUtils.writeJsonFile(configFile, config);
@@ -103,7 +113,7 @@ export async function parseGrammarFile(
 ): Promise<Project | undefined> {
     if (!selectedProject) {
         window.showErrorMessage(
-            "Please enter into a project's directory to parse the main grammar file."
+            Strings.pleaseSelectADirectoryToParseTheGrammarFileIn
         );
 
         return undefined;
@@ -111,7 +121,7 @@ export async function parseGrammarFile(
 
     if (!selectedProject.mainGrammarPath) {
         window.showErrorMessage(
-            "You need to specify a main grammar file in the config file to parse it."
+            Strings.youNeedToSpecifyAMainGrammarFileInTheConfigFileToParseIt
         );
 
         return undefined;

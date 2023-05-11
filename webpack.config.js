@@ -21,6 +21,9 @@ const config = {
         libraryTarget: "commonjs2",
         devtoolModuleFilenameTemplate: "../[resource-path]",
     },
+    stats: {
+        errorDetails: true,
+    },
     dependencies: ["vscode", "app-root-path"],
     devtool: "source-map",
     externals: {
@@ -28,10 +31,11 @@ const config = {
     },
     resolve: {
         // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-        extensions: [".ts", ".js"],
+        extensions: ["", ".ts", ".js", "..."],
         alias: {
             "@": path.resolve(__dirname, "src"),
         },
+        modules: ["node_modules", "src"],
     },
     module: {
         rules: [
@@ -41,11 +45,6 @@ const config = {
                 use: [
                     {
                         loader: "ts-loader",
-                        options: {
-                            compilerOptions: {
-                                module: "CommonJS", // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-                            },
-                        },
                     },
                 ],
             },
