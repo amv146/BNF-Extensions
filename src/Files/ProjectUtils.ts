@@ -128,7 +128,7 @@ export async function updateProjectFiles(project: Project): Promise<void> {
     );
 
     FileSystemEntryUtils.writeJsonFile(
-        PathUtils.getLanguageSyntaxPath(project.languageId),
+        PathUtils.languageSyntaxPath(project.languageId),
         textmateFile
     );
 
@@ -142,12 +142,12 @@ export async function updateProjectFiles(project: Project): Promise<void> {
             );
 
         FileSystemEntryUtils.writeJsonFile(
-            PathUtils.getLanguageConfigurationPath(project.languageId),
+            PathUtils.languageConfigurationPath(project.languageId),
             languageConfigurationFile
         );
     } else {
         FileSystemEntryUtils.deleteFile(
-            PathUtils.getLanguageConfigurationPath(project.languageId)
+            PathUtils.languageConfigurationPath(project.languageId)
         );
     }
 

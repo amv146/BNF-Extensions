@@ -229,7 +229,9 @@ function createPatternIncludes(tokens: Token[]): Record<string, string>[] {
 function createRepository(tokens: Token[]): TextmateRepository {
     const repository: TextmateRepository = {};
 
-    // Group tokens by their types into a map
+    /**
+     * Group tokens by their types into a map
+     */
     const tokensByType: Map<TokenType, Token[]> = tokens.reduce(
         (currentTokensByType, token) => {
             const tokensOfType = currentTokensByType.get(token.type) ?? [];

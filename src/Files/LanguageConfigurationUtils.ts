@@ -56,7 +56,7 @@ export function generateLanguageConfigurationFile(
     return languageConfigurationFile;
 }
 
-function endTokenForBeginToken(beginToken: string): string {
+function endTokenForBeginToken(beginToken: string): string | undefined {
     switch (beginToken) {
         case "(":
             return ")";
@@ -73,7 +73,7 @@ function endTokenForBeginToken(beginToken: string): string {
         case "`":
             return "`";
         default:
-            throw new Error(`Unknown begin token: ${beginToken}`);
+            return undefined;
     }
 }
 
