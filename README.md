@@ -53,6 +53,8 @@ The grammar is the most important part of the config file. It contains the infor
   - `type`: A type in the language. Examples include `int`, `float`, `string`, etc.
   - `terminator`: A terminator in the language. This is typically used to terminate a statement and is applied at the end of every statement. The most common example of this is a semicolon.
 - `values`: A list of strings that represent the text that will be highlighted according to the type.
+- `begin`: Only used for block comments. The string that begins a block comment.
+- `end`: Only used for block comments. The string that ends a block comment.
 
 ## Default Grammar Syntax Highlighting
 Using a BNFC grammar file, the extension will automatically create a default grammar from the grammar file chosen when creating the config file. This default grammar is created through pre-defined rules that are based on the type of rule in the grammar file. The extension tries to match different patterns for rule inside the file, and infers grammar types based on the name of the values and the type of rule. There are currently four types of rules that are supported:
