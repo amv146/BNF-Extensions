@@ -2,6 +2,9 @@
 
 When creating the default grammar for a project based on a grammar file, the following strings are mapped to the corresponding types based on other programming languages:
 
+## Characters
+- `'`
+
 ## Constants
 - `false`
 - `null`
@@ -48,6 +51,7 @@ When creating the default grammar for a project based on a grammar file, the fol
 - `package`
 - `private`
 - `public`
+- `rec`
 - `require`
 - `return`
 - `static`
@@ -64,6 +68,20 @@ When creating the default grammar for a project based on a grammar file, the fol
 - `with`
 - `yield`
 
+## Punctuation
+- `{`
+- `}`
+- `[`
+- `]`
+- `(`
+- `)`
+- `<`
+- `>`
+- `` ` ``
+
+## Strings
+- `"`
+
 ## Types
 - `any`
 - `boolean`
@@ -79,4 +97,7 @@ When creating the default grammar for a project based on a grammar file, the fol
 - `string`
 
 ## Functions
-Any string that is not a constant, keyword, or type is mapped to a (built-in) function.
+Any string containing only letters that does not match any of the above types is considered a function.
+
+## Operators
+Any string containing only symbols that does not match any of the above types is considered an operator.

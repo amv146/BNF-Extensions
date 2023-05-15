@@ -1,5 +1,3 @@
-import { TokenType } from "@/Tokens/Token";
-
 export enum PredefinedTokenValue {
     abstract = "abstract",
     any = "any",

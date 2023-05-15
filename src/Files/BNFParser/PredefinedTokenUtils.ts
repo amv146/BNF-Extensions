@@ -94,9 +94,11 @@ export function predefinedTokenValueToTokenType(
         case PredefinedTokenValue["]"]:
         case PredefinedTokenValue["<"]:
         case PredefinedTokenValue[">"]:
-        case PredefinedTokenValue["'"]:
-        case PredefinedTokenValue['"']:
         case PredefinedTokenValue["`"]:
             return TokenType.punctuation;
+        case PredefinedTokenValue['"']:
+            return TokenType.string;
+        case PredefinedTokenValue["'"]:
+            return TokenType.character;
     }
 }
