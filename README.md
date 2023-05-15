@@ -7,10 +7,11 @@ Creating syntax highlighting for a language can be a tedious process, especially
 ## Quick Start
 
 1. Open up the context menu by right clicking the folder which you want to create a project in.
-2. Click on `Create Config File`. 
-![createConfigFile](https://user-images.githubusercontent.com/39172404/208337028-f2974af4-b7dc-429b-8d92-4c6f34edd525.gif)
+2. Click on `BNF Extensions: Create Config File in Current Directory`. 
 
-3. Fill in the prompts with the appropriate information. It will first ask you to select a BNF grammar file, if you choose to select one, it will be used to create default grammar in the config file based on the parsed grammar file. If none are found, you can pick none. It will then ask you for the name of the project and the main file extension of the language. This file extension should be in the form of `.ext` and not `ext`. The extension will be used to determine which files to apply the syntax highlighting to.
+![createConfigFile](https://github.com/amv146/BNFC-Extensions/assets/39172404/7c6caa38-096a-4ca0-9df4-85fbdd34486f)
+
+4. Fill in the prompts with the appropriate information. It will first ask you to select a BNF grammar file, if you choose to select one, it will be used to create default grammar in the config file based on the parsed grammar file. If none are found, you can pick none. It will then ask you for the name of the project and the main file extension of the language. This file extension should be in the form of `.ext` and not `ext`. The extension will be used to determine which files to apply the syntax highlighting to.
 ![createConfigFilePrompts](https://user-images.githubusercontent.com/39172404/208337104-e6edfb2b-a1b1-4f5b-bf76-881f3ea99e3c.gif)
 
 4. After completing the prompts, a new `config.bnf.json` file will be created in the root of the project where the context menu was opened. This file contains the base information that was provided in the prompts.
@@ -52,6 +53,8 @@ The grammar is the most important part of the config file. It contains the infor
   - `type`: A type in the language. Examples include `int`, `float`, `string`, etc.
   - `terminator`: A terminator in the language. This is typically used to terminate a statement and is applied at the end of every statement. The most common example of this is a semicolon.
 - `values`: A list of strings that represent the text that will be highlighted according to the type.
+- `begin`: Only used for block comments. The string that begins a block comment.
+- `end`: Only used for block comments. The string that ends a block comment.
 
 ## Default Grammar Syntax Highlighting
 Using a BNFC grammar file, the extension will automatically create a default grammar from the grammar file chosen when creating the config file. This default grammar is created through pre-defined rules that are based on the type of rule in the grammar file. The extension tries to match different patterns for rule inside the file, and infers grammar types based on the name of the values and the type of rule. There are currently four types of rules that are supported:
